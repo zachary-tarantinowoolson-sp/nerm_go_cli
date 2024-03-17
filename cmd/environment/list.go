@@ -18,8 +18,8 @@ func newListCommand() *cobra.Command {
 		Aliases: []string{"ls"},
 		RunE: func(cmd *cobra.Command, args []string) error {
 			environments := utilities.FindEnvironments()
-			for _, file := range environments {
-				fmt.Println(file.Name(), file.IsDir())
+			for _, env := range environments {
+				fmt.Println(env)
 			}
 
 			// if len(environments) != 0 {

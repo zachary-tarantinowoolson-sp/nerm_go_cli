@@ -22,6 +22,7 @@ THE SOFTWARE.
 package cmd
 
 import (
+	"nerm_cli/cmd/environment"
 	"os"
 
 	"github.com/spf13/cobra"
@@ -30,8 +31,8 @@ import (
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
 	Use:   "nerm_cli",
-	Short: "A brief description of your application",
-	Long:  `A longer description that spans mul`,
+	Short: "CLI Tool to make API requests and generate files",
+	Long:  `CLI Tool to make API requests and generate files`,
 	// Uncomment the following line if your bare application
 	// has an action associated with it:
 	// Run: func(cmd *cobra.Command, args []string) { },
@@ -44,6 +45,24 @@ func Execute() {
 	if err != nil {
 		os.Exit(1)
 	}
+}
+
+func NewRootCommand() *cobra.Command {
+	root := &cobra.Command{
+		Use:          "nerm",
+		Long:         "starts the use of the CLi",
+		Example:      "nerm",
+		SilenceUsage: true,
+		Run: func(cmd *cobra.Command, args []string) {
+			cmd.Help()
+		},
+	}
+
+	root.AddCommand(
+		environment.NewEnvironmentCommand(),
+	)
+
+	return root
 }
 
 func init() {

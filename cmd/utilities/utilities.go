@@ -1,7 +1,7 @@
 /*
 Copyright © 2024 Zachary Tarantino-Woolson <zachary.tarantino@sailpoint.com>
 */
-package cmd
+package utilities
 
 import (
 	"log"
@@ -28,16 +28,21 @@ func init() {
 	// utilitiesCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }
 
-func FindEnvironments() {
+func FindEnvironments() []string {
+
+	var env_names []string
 	files, err := os.ReadDir("/environment/environment_files/")
+
 	if err != nil {
 		log.Fatal(err)
 	}
-	return files
+	for _, file := range files {
+		env_names = append(env_names, file.Name())
+	}
+	return env_names
 
 }
 
 func CreateEnvironment(environmentName string) {
-	existing_envs := utilities.FindEnvironments()
-
+	// existing_envs := FindEnvironments()
 }
