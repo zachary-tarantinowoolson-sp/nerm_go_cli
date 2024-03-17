@@ -10,14 +10,14 @@ There are default settings configured in the `settings.env` file. These are:
 
 
 ## ToDo
-- :heavy_check_mark Build environment manager
-    - :heavy_check_mark Create
-    - :heavy_check_mark Show
-    - :heavy_check_mark Update
-    - :heavy_check_mark Delete
-    - :heavy_check_mark Update
-    - :heavy_check_mark List all
-- :heavy_check_mark Health Check
+- :heavy_check_mark: Build environment manager
+    - :heavy_check_mark: Create
+    - :heavy_check_mark: Show
+    - :heavy_check_mark: Update
+    - :heavy_check_mark: Delete
+    - :heavy_check_mark: Update
+    - :heavy_check_mark: List all
+- :heavy_check_mark: Health Check
 - [ ] Pulling profiles into a report
     - Allow query parameters 
     - Table display / print to a file
