@@ -23,6 +23,7 @@ package root
 
 import (
 	"nerm/cmd/environment"
+	"nerm/cmd/health_check"
 	"os"
 
 	"github.com/spf13/cobra"
@@ -60,6 +61,7 @@ func NewRootCommand() *cobra.Command {
 
 	root.AddCommand(
 		environment.NewEnvironmentCommand(),
+		health_check.NewHealthCheckCommand(),
 	)
 
 	return root

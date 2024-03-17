@@ -44,6 +44,7 @@ func CreateEnvironment(environmentName string) error {
 	existing_envs := FindEnvironments()
 	var tenant string
 	var token string
+	var baseurl string
 
 	if existing_envs[environmentName] != nil {
 		log.Print(environmentName + " already exists. Please use 'nerm env update' to update that environment")
@@ -51,6 +52,7 @@ func CreateEnvironment(environmentName string) error {
 	}
 
 	tenant = environmentName
+	baseurl = configs.GetBaseURL()
 
 	var s string
 	r := bufio.NewReader(os.Stdin)
@@ -65,6 +67,21 @@ func CreateEnvironment(environmentName string) error {
 
 	if prompt_input != "" {
 		tenant = prompt_input
+	}
+
+	var y string
+	re := bufio.NewReader(os.Stdin)
+	for {
+		fmt.Fprint(os.Stderr, "Please enter a new Base URL or press enter if the following is correct (https://tenant.{{baseurl}}.com) ("+baseurl+"):")
+		y, _ = re.ReadString('\n')
+		if y != "" {
+			break
+		}
+	}
+	prompt_input_3 := strings.TrimSpace(y)
+
+	if prompt_input_3 != "" {
+		baseurl = prompt_input_3
 	}
 
 	var x string
@@ -84,6 +101,7 @@ func CreateEnvironment(environmentName string) error {
 
 	configs.SetCurrentEnvironment(environmentName)
 	configs.SetTenant(tenant)
+	configs.SetBaseURL(baseurl)
 	configs.SetAPIToken(token)
 
 	return nil
@@ -92,8 +110,10 @@ func CreateEnvironment(environmentName string) error {
 func UpdateEnvironment(environmentName string) error {
 	var tenant string
 	var token string
+	var baseurl string
 
 	tenant = environmentName
+	baseurl = configs.GetBaseURL()
 
 	var s string
 	r := bufio.NewReader(os.Stdin)
@@ -108,6 +128,21 @@ func UpdateEnvironment(environmentName string) error {
 
 	if prompt_input != "" {
 		tenant = prompt_input
+	}
+
+	var y string
+	re := bufio.NewReader(os.Stdin)
+	for {
+		fmt.Fprint(os.Stderr, "Please enter a new Base URL or press enter if the following is correct (https://tenant.{{baseurl}}.com) ("+baseurl+"):")
+		y, _ = re.ReadString('\n')
+		if y != "" {
+			break
+		}
+	}
+	prompt_input_3 := strings.TrimSpace(y)
+
+	if prompt_input_3 != "" {
+		baseurl = prompt_input_3
 	}
 
 	var x string
@@ -127,6 +162,7 @@ func UpdateEnvironment(environmentName string) error {
 
 	configs.SetCurrentEnvironment(environmentName)
 	configs.SetTenant(tenant)
+	configs.SetBaseURL(baseurl)
 	configs.SetAPIToken(token)
 
 	return nil

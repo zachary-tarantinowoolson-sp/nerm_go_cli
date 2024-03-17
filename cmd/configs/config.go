@@ -87,7 +87,7 @@ func SetTenant(tenant string) {
 	viper.Set("ALL_ENVIRONMENTS."+GetCurrentEnvironment()+".TENANT", tenant)
 }
 func SetBaseURL(baseurl string) {
-	viper.Set("BASEURL", baseurl)
+	viper.Set("ALL_ENVIRONMENTS."+GetCurrentEnvironment()+".BASEURL", baseurl)
 }
 func SetAPIToken(token string) {
 	viper.Set("ALL_ENVIRONMENTS."+GetCurrentEnvironment()+".TOKEN", "Bearer "+token)
@@ -106,7 +106,11 @@ func GetTenant() string {
 	return viper.GetString("ALL_ENVIRONMENTS." + GetCurrentEnvironment() + ".TENANT")
 }
 func GetBaseURL() string {
-	return viper.GetString("BASEURL")
+	base := viper.GetString("ALL_ENVIRONMENTS." + GetCurrentEnvironment() + ".BASEURL")
+	if base == "" {
+		base = viper.GetString("BASEURL")
+	}
+	return base
 }
 func GetAPIToken() string {
 	return viper.GetString("ALL_ENVIRONMENTS." + GetCurrentEnvironment() + ".TOKEN")

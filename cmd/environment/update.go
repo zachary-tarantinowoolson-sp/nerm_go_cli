@@ -20,7 +20,7 @@ func newUpdateCommand() *cobra.Command {
 		Short:   "Update an existing environment",
 		Long:    "Update an existing environment's Tenant and/or Token for use in the CLI",
 		Example: "nerm env update | nerm env update env_name",
-		Aliases: []string{"c"},
+		Aliases: []string{"u"},
 		RunE: func(cmd *cobra.Command, args []string) error {
 			environments := utilities.FindEnvironments()
 

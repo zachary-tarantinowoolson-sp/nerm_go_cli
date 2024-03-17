@@ -17,6 +17,7 @@ There are default settings configured in the `settings.env` file. These are:
     - [x] Delete
     - [x] Update
     - [x] List all
+- [x] Health Check
 - [ ] Pulling profiles into a report
     - Allow query parameters 
     - Table display / print to a file
