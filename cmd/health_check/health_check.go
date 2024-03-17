@@ -8,7 +8,6 @@ import (
 	"io/ioutil"
 	"log"
 	"nerm/cmd/configs"
-	"nerm/cmd/utilities"
 	"net/http"
 
 	"github.com/spf13/cobra"
@@ -22,9 +21,6 @@ func NewHealthCheckCommand() *cobra.Command {
 		Example: "nerm hc | nerm hc env_name",
 		Aliases: []string{"hc"},
 		RunE: func(cmd *cobra.Command, args []string) error {
-			for _, environmentName := range args {
-				utilities.CreateEnvironment(environmentName)
-			}
 			baseurl := configs.GetBaseURL()
 
 			if len(args) == 0 {

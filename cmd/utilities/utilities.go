@@ -5,9 +5,11 @@ package utilities
 
 import (
 	"bufio"
+	"bytes"
 	"fmt"
 	"log"
 	"nerm/cmd/configs"
+	"net/http"
 	"os"
 	"strings"
 )
@@ -166,4 +168,52 @@ func UpdateEnvironment(environmentName string) error {
 	configs.SetAPIToken(token)
 
 	return nil
+}
+
+func MakeAPIRequests(method string, endpoint string, req_id string, params string, jsonStr []byte) (*http.Response, error) {
+	tenant := configs.GetTenant()
+	baseurl := configs.GetBaseURL()
+
+	url := "http://" + tenant + "." + baseurl + "/api/" + endpoint
+	if req_id != "" {
+		url = url + "/" + req_id
+	} else {
+		url = url + "?" + params
+	}
+
+	switch strings.ToLower(method) {
+	case "get":
+		resp, resp_err := MakeGetRequest(url, jsonStr)
+
+		return resp, resp_err
+	case "post":
+
+	case "patch":
+
+	case "delete":
+
+	default:
+		fmt.Println("No Method given.")
+	}
+
+	return nil, nil
+}
+
+func MakeGetRequest(url string, jsonStr []byte) (*http.Response, error) {
+	req, err := http.NewRequest(http.MethodPost, url, bytes.NewBuffer(jsonStr))
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	req.Header.Add("Authorization", configs.GetAPIToken())
+	req.Header.Add("Content-Type", "application/json")
+	req.Header.Add("Accept", "application/json")
+
+	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer resp.Body.Close()
+
+	return resp, nil
 }
