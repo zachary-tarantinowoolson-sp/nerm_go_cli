@@ -11,7 +11,12 @@ There are default settings configured in the `settings.env` file. These are:
 
 ## ToDo
 - [ ] Build environment manager
-    - CRUD enviroments
+    - [ ] Create
+    - [ ] Show
+    - [ ] Update
+    - [ ] Delete
+    - [ ] Update
+    - [ ] List all
 - [ ] Pulling profiles into a report
     - Allow query parameters 
     - Table display / print to a file
