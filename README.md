@@ -10,13 +10,13 @@ There are default settings configured in the `settings.env` file. These are:
 
 
 ## ToDo
-- [ ] Build environment manager
-    - [ ] Create
-    - [ ] Show
-    - [ ] Update
-    - [ ] Delete
-    - [ ] Update
-    - [ ] List all
+- [x] Build environment manager
+    - [x] Create
+    - [x] Show
+    - [x] Update
+    - [x] Delete
+    - [x] Update
+    - [x] List all
 - [ ] Pulling profiles into a report
     - Allow query parameters 
     - Table display / print to a file

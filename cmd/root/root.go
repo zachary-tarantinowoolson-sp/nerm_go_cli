@@ -19,10 +19,10 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package cmd
+package root
 
 import (
-	"nerm_cli/cmd/environment"
+	"nerm/cmd/environment"
 	"os"
 
 	"github.com/spf13/cobra"
@@ -30,9 +30,9 @@ import (
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
-	Use:   "nerm_cli",
-	Short: "CLI Tool to make API requests and generate files",
-	Long:  `CLI Tool to make API requests and generate files`,
+	Use:   "nerm",
+	Short: "CLI Tool to make API requests and generate files asd",
+	Long:  `CLI Tool to make API requests and generate files asdd`,
 	// Uncomment the following line if your bare application
 	// has an action associated with it:
 	// Run: func(cmd *cobra.Command, args []string) { },
@@ -70,7 +70,7 @@ func init() {
 	// Cobra supports persistent flags, which, if defined here,
 	// will be global for your application.
 
-	// rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.nerm_cli.yaml)")
+	// rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.nerm.yaml)")
 
 	// Cobra also supports local flags, which will only run
 	// when this action is called directly.

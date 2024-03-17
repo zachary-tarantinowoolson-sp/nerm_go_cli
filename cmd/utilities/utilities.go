@@ -4,8 +4,12 @@ Copyright © 2024 Zachary Tarantino-Woolson <zachary.tarantino@sailpoint.com>
 package utilities
 
 import (
+	"bufio"
+	"fmt"
 	"log"
+	"nerm/cmd/configs"
 	"os"
+	"strings"
 )
 
 type Environment struct {
@@ -28,21 +32,102 @@ func init() {
 	// utilitiesCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }
 
-func FindEnvironments() []string {
+func FindEnvironments() map[string]interface{} {
 
-	var env_names []string
-	files, err := os.ReadDir("/environment/environment_files/")
+	env_names := configs.GetAllEnvironments()
 
-	if err != nil {
-		log.Fatal(err)
-	}
-	for _, file := range files {
-		env_names = append(env_names, file.Name())
-	}
 	return env_names
 
 }
 
-func CreateEnvironment(environmentName string) {
-	// existing_envs := FindEnvironments()
+func CreateEnvironment(environmentName string) error {
+	existing_envs := FindEnvironments()
+	var tenant string
+	var token string
+
+	if existing_envs[environmentName] != nil {
+		log.Print(environmentName + " already exists. Please use 'nerm env update' to update that environment")
+		return nil
+	}
+
+	tenant = environmentName
+
+	var s string
+	r := bufio.NewReader(os.Stdin)
+	for {
+		fmt.Fprint(os.Stderr, "Please enter the Tenant name or press enter if the following is correct (https://{{tenant}}.nonemployee.com) ("+tenant+"):")
+		s, _ = r.ReadString('\n')
+		if s != "" {
+			break
+		}
+	}
+	prompt_input := strings.TrimSpace(s)
+
+	if prompt_input != "" {
+		tenant = prompt_input
+	}
+
+	var x string
+	a := bufio.NewReader(os.Stdin)
+	for {
+		fmt.Fprint(os.Stderr, "Please enter a bearer token to use with this tenant (Bearer: {{token}}) (Please only enter the token value, not 'Bearer'):")
+		x, _ = a.ReadString('\n')
+		if x != "" {
+			break
+		}
+	}
+	prompt_input_2 := strings.TrimSpace(x)
+
+	if prompt_input_2 != "" {
+		token = prompt_input_2
+	}
+
+	configs.SetCurrentEnvironment(environmentName)
+	configs.SetTenant(tenant)
+	configs.SetAPIToken(token)
+
+	return nil
+}
+
+func UpdateEnvironment(environmentName string) error {
+	var tenant string
+	var token string
+
+	tenant = environmentName
+
+	var s string
+	r := bufio.NewReader(os.Stdin)
+	for {
+		fmt.Fprint(os.Stderr, "Please enter a new Tenant name or press enter if the following is correct (https://{{tenant}}.nonemployee.com) ("+tenant+"):")
+		s, _ = r.ReadString('\n')
+		if s != "" {
+			break
+		}
+	}
+	prompt_input := strings.TrimSpace(s)
+
+	if prompt_input != "" {
+		tenant = prompt_input
+	}
+
+	var x string
+	a := bufio.NewReader(os.Stdin)
+	for {
+		fmt.Fprint(os.Stderr, "Please enter a new bearer token to use with this tenant (Bearer: {{token}}) (Please only enter the token value, not 'Bearer'):")
+		x, _ = a.ReadString('\n')
+		if x != "" {
+			break
+		}
+	}
+	prompt_input_2 := strings.TrimSpace(x)
+
+	if prompt_input_2 != "" {
+		token = prompt_input_2
+	}
+
+	configs.SetCurrentEnvironment(environmentName)
+	configs.SetTenant(tenant)
+	configs.SetAPIToken(token)
+
+	return nil
 }

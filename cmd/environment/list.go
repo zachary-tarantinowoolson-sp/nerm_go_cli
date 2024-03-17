@@ -5,6 +5,7 @@ package environment
 
 import (
 	"fmt"
+	"nerm/cmd/utilities"
 
 	"github.com/spf13/cobra"
 )
@@ -18,21 +19,13 @@ func newListCommand() *cobra.Command {
 		Aliases: []string{"ls"},
 		RunE: func(cmd *cobra.Command, args []string) error {
 			environments := utilities.FindEnvironments()
-			for _, env := range environments {
-				fmt.Println(env)
+			// for _, env := range environments {
+			// }
+
+			for k := range environments {
+				fmt.Println(k)
 			}
 
-			// if len(environments) != 0 {
-			// 	log.Warn("You are about to Print out the list of Environments")
-			// 	res := terminal.InputPrompt("Press Enter to continue")
-			// 	log.Info("Response", "res", res)
-			// 	if res == "" {
-			// 		fmt.Println(util.PrettyPrint(environments))
-			// 	}
-			// } else {
-			// 	log.Warn("No environments configured")
-			// 	return nil
-			// }
 			return nil
 		},
 	}

@@ -1,4 +1,4 @@
-module nerm_cli
+module nerm
 
 go 1.22.1
 

@@ -22,10 +22,10 @@ func NewEnvironmentCommand() *cobra.Command {
 	cmd.AddCommand(
 		newCreateCommand(),
 		newListCommand(),
-		// newShowCommand(),
-		// newDeleteCommand(),
-		// newUpdateCommand(),
-		// newUseCommand(),
+		newShowCommand(),
+		newDeleteCommand(),
+		newUpdateCommand(),
+		newUseCommand(),
 	)
 
 	return cmd
