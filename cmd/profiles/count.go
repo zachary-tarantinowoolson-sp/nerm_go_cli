@@ -9,7 +9,11 @@ import (
 	"log"
 	"nerm/cmd/utilities"
 	"net/url"
+	"strconv"
 
+	"github.com/fatih/color"
+	"github.com/rodaine/table"
+	"github.com/schollz/progressbar/v3"
 	"github.com/spf13/cobra"
 )
 
@@ -53,6 +57,8 @@ func newProfileCountCommand() *cobra.Command {
 			endTotal := 0
 			allStatuses := [4]string{"Active", "Inactive", "On Leave", "Terminated"}
 
+			var finalValues [][]string
+
 			type_params := url.Values{}
 			type_params.Add("limit", "100")
 			type_params.Add("metadata", "true")
@@ -69,10 +75,16 @@ func newProfileCountCommand() *cobra.Command {
 				fmt.Println("Can not unmarshal JSON")
 			}
 
-			// fmt.Println(string(types_resp))
+			bar := progressbar.Default(int64(len(result.ProfileTypes))) // set progress to number of profile types found
 
 			for _, rec := range result.ProfileTypes {
-				fmt.Println(rec.Name)
+				bar.Add(1) // increment progress
+				var typeValues []string
+				runningTotal := 0
+
+				typeValues = append(typeValues, string(rec.Name))
+
+				// fmt.Println(rec.Name)
 				params := url.Values{}
 				params.Add("profile_type_id", string(rec.ID))
 				params.Add("limit", "1")
@@ -95,17 +107,35 @@ func newProfileCountCommand() *cobra.Command {
 						fmt.Println("Can not unmarshal JSON")
 					}
 
-					endTotal = endTotal + profile_result.Metadata.Total
-					fmt.Println(status+" Total: ", profile_result.Metadata.Total)
+					typeValues = append(typeValues, strconv.Itoa(profile_result.Metadata.Total))
+					runningTotal = runningTotal + profile_result.Metadata.Total
 
 					params.Del(status) // remove status just in case to add the next one
 				}
 
+				typeValues = append(typeValues, strconv.Itoa(runningTotal))
+				finalValues = append(finalValues, typeValues)
+				endTotal = endTotal + runningTotal
 			}
 
-			fmt.Println("Full Total: ", endTotal)
+			printTable(finalValues)
+			fmt.Println("Total of all Profiles: ", endTotal)
 
 			return nil
 		},
 	}
+}
+
+func printTable(data [][]string) {
+	headerFmt := color.New(color.FgGreen, color.Underline).SprintfFunc()
+	columnFmt := color.New(color.FgYellow).SprintfFunc()
+
+	tbl := table.New("Profile Type", "Active", "Inactive", "On Leave", "Terminated", "Total")
+	tbl.WithHeaderFormatter(headerFmt).WithFirstColumnFormatter(columnFmt)
+
+	for _, row := range data {
+		tbl.AddRow(row[0], row[1], row[2], row[3], row[4], row[5])
+	}
+
+	tbl.Print()
 }

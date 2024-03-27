@@ -10,20 +10,20 @@ There are default settings configured in the `settings.env` file. These are:
 
 
 ## ToDo
-- :heavy_check_mark: Build environment manager
-    - :heavy_check_mark: Create
-    - :heavy_check_mark: Show
-    - :heavy_check_mark: Update
-    - :heavy_check_mark: Delete
-    - :heavy_check_mark: Update
-    - :heavy_check_mark: List all
-- :heavy_check_mark: Health Check
+- [x] Build environment manager
+    - [x] Create
+    - [x] Show
+    - [x] Update
+    - [x] Delete
+    - [x] Update
+    - [x] List all
+- [x] Health Check
 - [ ] Pulling profiles into a report
     - Allow query parameters 
     - Table display / print to a file
-- [ ] Basic Profile Counts
+- [x] Basic Profile Counts
     - Show Profile counts based on status and for each profile type
-    - Table display / print to a file
+    - Table display
 - [ ] Advanced Searching
 - [ ] IDP reporting
     - Get records
