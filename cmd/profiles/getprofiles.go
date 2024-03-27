@@ -4,6 +4,7 @@ Copyright © 2024 Zachary Tarantino-Woolson <zachary.tarantino@sailpoint.com>
 package profiles
 
 import (
+	"encoding/json"
 	"fmt"
 	"log"
 	"nerm/cmd/utilities"
@@ -28,7 +29,11 @@ func newProfileGetCommand() *cobra.Command {
 			force_backend := cmd.Flags().Lookup("force_backend").Value.String()
 			limit := cmd.Flags().Lookup("limit").Value.String()
 
+			var resp []byte
+			var requestErr error
+
 			params := url.Values{}
+			params.Add("metadata", "true")
 
 			if exclude != "" {
 				params.Add("exclude_attributes", exclude)
@@ -50,24 +55,35 @@ func newProfileGetCommand() *cobra.Command {
 			}
 
 			if id != "" {
-
-				resp, err := utilities.MakeAPIRequests("get", "profiles", id, params.Encode(), nil)
-				if err != nil {
-					log.Fatal(err)
-				}
-
-				fmt.Println(string(resp))
-
+				resp, requestErr = utilities.MakeAPIRequests("get", "profiles", id, params.Encode(), nil)
 			} else {
-
-				resp, err := utilities.MakeAPIRequests("get", "profiles", "", params.Encode(), nil)
-				if err != nil {
-					log.Fatal(err)
-				}
-
-				fmt.Println(string(resp))
-
+				resp, requestErr = utilities.MakeAPIRequests("get", "profiles", "", params.Encode(), nil)
 			}
+
+			if requestErr != nil {
+				log.Fatal(requestErr)
+			}
+
+			var profile_result ProfileResponse
+			err := json.Unmarshal(resp, &profile_result)
+			if err != nil { // Parse []byte to the go struct pointer
+				fmt.Println("Can not unmarshal JSON")
+			}
+
+			// fmt.Println(string(resp))
+			// fmt.Println(profile_result)
+
+			j, _ := json.MarshalIndent(profile_result, "", "    ")
+
+			fmt.Println(string(j))
+
+			// var finalValues [][]string
+
+			// for _, rec := range profile_result.Profiles {
+			// 	var rowValues []string
+
+			// 	rowValues = append(rowValues, rec.Attributes)
+			// }
 
 			return nil
 		},

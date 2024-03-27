@@ -20,14 +20,15 @@ type ProfileTypeResponse struct {
 
 type ProfileResponse struct {
 	Profiles []struct {
-		ID               string `json:"id"`
-		UID              string `json:"uid"`
-		Name             string `json:"name"`
-		ProfileTypeID    string `json:"profile_type_id"`
-		Status           string `json:"status"`
-		IDProofingStatus string `json:"id_proofing_status"`
-		UpdatedAt        string `json:"updated_at"`
-		CreatedAt        string `json:"created_at"`
+		ID               string            `json:"id"`
+		UID              string            `json:"uid"`
+		Name             string            `json:"name"`
+		ProfileTypeID    string            `json:"profile_type_id"`
+		Status           string            `json:"status"`
+		IDProofingStatus string            `json:"id_proofing_status"`
+		UpdatedAt        string            `json:"updated_at"`
+		CreatedAt        string            `json:"created_at"`
+		Attributes       map[string]string `json:"attributes"`
 	} `json:"profiles"`
 	Metadata struct {
 		Limit  int    `json:"limit"`
