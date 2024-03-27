@@ -7,6 +7,7 @@ import (
 	"bufio"
 	"bytes"
 	"fmt"
+	"io"
 	"log"
 	"nerm/cmd/configs"
 	"net/http"
@@ -170,7 +171,7 @@ func UpdateEnvironment(environmentName string) error {
 	return nil
 }
 
-func MakeAPIRequests(method string, endpoint string, req_id string, params string, jsonStr []byte) (*http.Response, error) {
+func MakeAPIRequests(method string, endpoint string, req_id string, params string, jsonStr []byte) ([]byte, error) {
 	tenant := configs.GetTenant()
 	baseurl := configs.GetBaseURL()
 
@@ -183,6 +184,7 @@ func MakeAPIRequests(method string, endpoint string, req_id string, params strin
 
 	switch strings.ToLower(method) {
 	case "get":
+		// fmt.Println("url: ", url, " |   jsonstr: ", jsonStr)
 		resp, resp_err := MakeGetRequest(url, jsonStr)
 
 		return resp, resp_err
@@ -199,8 +201,8 @@ func MakeAPIRequests(method string, endpoint string, req_id string, params strin
 	return nil, nil
 }
 
-func MakeGetRequest(url string, jsonStr []byte) (*http.Response, error) {
-	req, err := http.NewRequest(http.MethodPost, url, bytes.NewBuffer(jsonStr))
+func MakeGetRequest(url string, jsonStr []byte) ([]byte, error) {
+	req, err := http.NewRequest(http.MethodGet, url, bytes.NewBuffer(jsonStr))
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -213,7 +215,12 @@ func MakeGetRequest(url string, jsonStr []byte) (*http.Response, error) {
 	if err != nil {
 		log.Fatal(err)
 	}
+
+	respBody, err := io.ReadAll(resp.Body)
+	if err != nil {
+		log.Fatal(err)
+	}
 	defer resp.Body.Close()
 
-	return resp, nil
+	return respBody, nil
 }
