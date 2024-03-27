@@ -15,13 +15,13 @@ import (
 	"github.com/spf13/cobra"
 )
 
-func newProfileCountCommand() *cobra.Command {
+func newProfileGetCommand() *cobra.Command {
 	return &cobra.Command{
-		Use:     "count",
-		Short:   "Pulls a count of all Profiles in current environment",
-		Long:    "Pulls a count of all Profiles in current environment by profile Type",
-		Example: "nerm profiles count",
-		Aliases: []string{"c"},
+		Use:     "get",
+		Short:   "Pulls Profiles from current environment",
+		Long:    "Pulls Profiles from current environment based on query parameters",
+		Example: "nerm profiles get",
+		Aliases: []string{"g"},
 		RunE: func(cmd *cobra.Command, args []string) error {
 
 			endTotal := 0
