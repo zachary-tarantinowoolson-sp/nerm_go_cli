@@ -20,7 +20,7 @@ There are default settings configured in the `settings.env` file. These are:
 - [x] Health Check
 - [ ] Pulling profiles into a report
     - Allow query parameters 
-    - Table display / print to a file
+    - Print to a file / json to csv
 - [x] Basic Profile Counts
     - Show Profile counts based on status and for each profile type
     - Table display
