@@ -42,7 +42,7 @@ func NewProfilesCommand() *cobra.Command {
 		Use:     "profiles",
 		Short:   "CRUD Profile data from an eviroment",
 		Long:    "Create, read, update, and delete Profiles. This allows an admin to execute commands against a specified NERM tenant",
-		Example: "nerm profiles count",
+		Example: "nerm profiles count | nerm profiles get",
 		Aliases: []string{"p"},
 		Run: func(cmd *cobra.Command, args []string) {
 			cmd.Help()

@@ -177,7 +177,7 @@ func MakeAPIRequests(method string, endpoint string, req_id string, params strin
 
 	url := "http://" + tenant + "." + baseurl + "/api/" + endpoint
 	if req_id != "" {
-		url = url + "/" + req_id
+		url = url + "/" + req_id + "?" + params
 	} else {
 		url = url + "?" + params
 	}
