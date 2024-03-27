@@ -72,13 +72,18 @@ func newProfileCountCommand() *cobra.Command {
 					// fmt.Println(string(resp))
 
 					var profile_result ProfileResponse
+					var respMetaData ResponseMetaData
 					err = json.Unmarshal(resp, &profile_result)
 					if err != nil { // Parse []byte to the go struct pointer
-						fmt.Println("Can not unmarshal JSON")
+						fmt.Println("Can not unmarshal JSON", err)
+					}
+					err = json.Unmarshal(resp, &respMetaData)
+					if err != nil { // Parse []byte to the go struct pointer
+						fmt.Println("Can not unmarshal JSON", err)
 					}
 
-					typeValues = append(typeValues, strconv.Itoa(profile_result.Metadata.Total))
-					runningTotal = runningTotal + profile_result.Metadata.Total
+					typeValues = append(typeValues, strconv.Itoa(respMetaData.Metadata.Total))
+					runningTotal = runningTotal + respMetaData.Metadata.Total
 
 					params.Del(status) // remove status just in case to add the next one
 				}
@@ -88,7 +93,7 @@ func newProfileCountCommand() *cobra.Command {
 				endTotal = endTotal + runningTotal
 			}
 
-			printTable(finalValues)
+			printCountTable(finalValues)
 			fmt.Println("Total of all Profiles: ", endTotal)
 
 			return nil
