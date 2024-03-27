@@ -4,6 +4,10 @@ Copyright © 2024 Zachary Tarantino-Woolson <zachary.tarantino@sailpoint.com>
 package profiles
 
 import (
+	"encoding/json"
+	"os"
+	"strings"
+
 	"github.com/fatih/color"
 	"github.com/rodaine/table"
 	"github.com/spf13/cobra"
@@ -30,6 +34,9 @@ type ProfileResponse struct {
 		CreatedAt        string            `json:"created_at"`
 		Attributes       map[string]string `json:"attributes"`
 	} `json:"profiles"`
+}
+
+type ResponseMetaData struct {
 	Metadata struct {
 		Limit  int    `json:"limit"`
 		Offset int    `json:"offset"`
@@ -58,7 +65,7 @@ func NewProfilesCommand() *cobra.Command {
 	return cmd
 }
 
-func printTable(data [][]string) {
+func printCountTable(data [][]string) {
 	headerFmt := color.New(color.FgGreen, color.Underline).SprintfFunc()
 	columnFmt := color.New(color.FgYellow).SprintfFunc()
 
@@ -70,4 +77,37 @@ func printTable(data [][]string) {
 	}
 
 	tbl.Print()
+}
+
+func createProfilesJsonFile(fileLoc string) {
+
+	file, _ := os.OpenFile(fileLoc, os.O_CREATE|os.O_TRUNC, os.ModePerm)
+	defer file.Close()
+	file.WriteString(strings.Trim("{\"profiles\":[", "\""))
+	defer file.Close()
+}
+
+func endProfilesJsonFile(fileLoc string) {
+
+	file, _ := os.OpenFile(fileLoc, os.O_APPEND, os.ModePerm)
+	defer file.Close()
+	file.WriteString(strings.Trim("]}", "\""))
+	defer file.Close()
+}
+
+func printToFile(fileLoc string, jsonData ProfileResponse) {
+
+	file, _ := os.OpenFile(fileLoc, os.O_APPEND|os.O_CREATE, os.ModePerm)
+	defer file.Close()
+	encoder := json.NewEncoder(file)
+
+	for i, rec := range jsonData.Profiles {
+		encoder.Encode(rec)
+		if (i + 1) != len(jsonData.Profiles) {
+			file.WriteString(strings.Trim(",", "\""))
+		}
+	}
+	// encoder := json.NewEncoder(file)
+	// encoder.Encode(jsonData)
+	defer file.Close()
 }
