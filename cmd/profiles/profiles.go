@@ -95,7 +95,7 @@ func endProfilesJsonFile(fileLoc string) {
 	defer file.Close()
 }
 
-func printToFile(fileLoc string, jsonData ProfileResponse) {
+func printToFile(fileLoc string, jsonData ProfileResponse, lastLoop bool) {
 
 	file, _ := os.OpenFile(fileLoc, os.O_APPEND|os.O_CREATE, os.ModePerm)
 	defer file.Close()
@@ -103,7 +103,9 @@ func printToFile(fileLoc string, jsonData ProfileResponse) {
 
 	for i, rec := range jsonData.Profiles {
 		encoder.Encode(rec)
-		if (i + 1) != len(jsonData.Profiles) {
+		if !lastLoop {
+			file.WriteString(strings.Trim(",", "\""))
+		} else if (i + 1) != len(jsonData.Profiles) {
 			file.WriteString(strings.Trim(",", "\""))
 		}
 	}

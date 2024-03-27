@@ -224,3 +224,9 @@ func MakeGetRequest(url string, jsonStr []byte) ([]byte, error) {
 
 	return respBody, nil
 }
+
+func CheckError(err error) {
+	if err != nil {
+		log.Fatal(err)
+	}
+}

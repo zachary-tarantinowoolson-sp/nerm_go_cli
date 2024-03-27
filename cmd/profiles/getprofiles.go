@@ -6,12 +6,12 @@ package profiles
 import (
 	"encoding/json"
 	"fmt"
-	"log"
 	"nerm/cmd/configs"
 	"nerm/cmd/utilities"
 	"net/url"
 	"strconv"
 
+	"github.com/schollz/progressbar/v3"
 	"github.com/spf13/cobra"
 )
 
@@ -31,6 +31,10 @@ func newProfileGetCommand() *cobra.Command {
 			force_backend := cmd.Flags().Lookup("force_backend").Value.String()
 			limit := cmd.Flags().Lookup("limit").Value.String()
 			fileLoc := cmd.Flags().Lookup("file").Value.String()
+			getLimit := cmd.Flags().Lookup("get_limit").Value.String()
+
+			limitInt, _ := strconv.Atoi(limit)
+			getLimitInt, _ := strconv.Atoi(getLimit)
 
 			var resp []byte
 			var requestErr error
@@ -56,7 +60,7 @@ func newProfileGetCommand() *cobra.Command {
 			if force_backend != "" {
 				params.Add("force_backend", force_backend)
 			}
-			if intLimit, _ := strconv.Atoi(limit); intLimit > 500 {
+			if limitInt > 500 {
 				fmt.Println("Limit can not be over 500")
 				limit = "500"
 				params.Add("limit", "500")
@@ -64,36 +68,61 @@ func newProfileGetCommand() *cobra.Command {
 				params.Add("limit", limit)
 			}
 
-			if id != "" {
-				resp, requestErr = utilities.MakeAPIRequests("get", "profiles", id, params.Encode(), nil)
-			} else {
-				resp, requestErr = utilities.MakeAPIRequests("get", "profiles", "", params.Encode(), nil)
-			}
+			// make first call to get the total number of profiles to be returned
+			resp, requestErr = utilities.MakeAPIRequests("get", "profiles", id, params.Encode(), nil)
 
-			if requestErr != nil {
-				log.Fatal(requestErr)
-			}
+			utilities.CheckError(requestErr)
 
 			var profile_result ProfileResponse
 			var respMetaData ResponseMetaData
+
 			err := json.Unmarshal(resp, &profile_result)
-			if err != nil { // Parse []byte to the go struct pointer
-				fmt.Println("Can not unmarshal JSON", err)
-			}
+			utilities.CheckError(err)
+
 			err = json.Unmarshal(resp, &respMetaData)
-			if err != nil { // Parse []byte to the go struct pointer
-				fmt.Println("Can not unmarshal JSON", err)
+			utilities.CheckError(err)
+
+			if getLimitInt > respMetaData.Metadata.Total {
+				getLimit = strconv.Itoa(respMetaData.Metadata.Total)
+				getLimitInt = respMetaData.Metadata.Total
 			}
 
-			// fmt.Println(string(resp))
-			// fmt.Println(profile_result)
+			bar := progressbar.Default(int64(getLimitInt)) // set progress to number of profile types found
+			lastLoop := false                              // used to determine where to add commas inthe json file, and for progressbar
+
+			for offset := 0; offset < getLimitInt; offset = offset + limitInt {
+
+				params.Add("offset", strconv.Itoa(offset))
+
+				resp, requestErr = utilities.MakeAPIRequests("get", "profiles", id, params.Encode(), nil)
+
+				utilities.CheckError(requestErr)
+
+				var profile_result ProfileResponse
+				var respMetaData ResponseMetaData
+
+				err := json.Unmarshal(resp, &profile_result)
+				utilities.CheckError(err)
+
+				err = json.Unmarshal(resp, &respMetaData)
+				utilities.CheckError(err)
+
+				if (offset + limitInt) >= getLimitInt {
+					bar.Set(getLimitInt)
+					lastLoop = true
+				}
+
+				if lastLoop {
+					bar.Set(getLimitInt)
+				} else {
+					bar.Add(limitInt) // increment progress
+				}
+
+				printToFile(fileLoc, profile_result, lastLoop)
+			}
 
 			// jsonData, _ := json.MarshalIndent(profile_result, "", "    ")
 			// fmt.Println(string(jsonData))
-
-			printToFile(fileLoc, profile_result)
-
-			// var finalValues [][]string
 
 			endProfilesJsonFile(fileLoc)
 
@@ -108,6 +137,7 @@ func newProfileGetCommand() *cobra.Command {
 	cmd.Flags().StringP("force_backend", "b", "", "Force the Profile Service or Identity Suite controllers")
 	cmd.Flags().StringP("limit", "l", strconv.Itoa(configs.GetDefaultLimitParam()), "Limit for each GET request")
 	cmd.Flags().StringP("file", "f", "", "Set the output location of the Profile Data")
+	cmd.Flags().StringP("get_limit", "g", "", "Set a Get limit for how many profiles to pull back (default is All profiles)")
 
 	cmd.MarkFlagRequired("file")
 
