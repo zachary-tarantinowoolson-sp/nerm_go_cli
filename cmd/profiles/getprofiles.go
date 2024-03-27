@@ -10,6 +10,7 @@ import (
 	"nerm/cmd/utilities"
 	"net/url"
 	"strconv"
+	"time"
 
 	"github.com/schollz/progressbar/v3"
 	"github.com/spf13/cobra"
@@ -19,7 +20,7 @@ func newProfileGetCommand() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "get",
 		Short:   "Pulls Profiles from current environment",
-		Long:    "Pulls Profiles from current environment based on query parameters",
+		Long:    "Pulls Profiles from current environment based on query parameters. Stores data in a CSV and JSON file at the defaul output location",
 		Example: "nerm profiles get --profile_type",
 		Aliases: []string{"g"},
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -30,16 +31,17 @@ func newProfileGetCommand() *cobra.Command {
 			name := cmd.Flags().Lookup("name").Value.String()
 			force_backend := cmd.Flags().Lookup("force_backend").Value.String()
 			limit := cmd.Flags().Lookup("limit").Value.String()
-			fileLoc := cmd.Flags().Lookup("file").Value.String()
 			getLimit := cmd.Flags().Lookup("get_limit").Value.String()
 
 			limitInt, _ := strconv.Atoi(limit)
 			getLimitInt, _ := strconv.Atoi(getLimit)
 
+			outputLoc := configs.GetOutputFolder() + configs.GetCurrentEnvironment() + "_Profile_Export" + strconv.Itoa(int(time.Now().Unix()))
+
 			var resp []byte
 			var requestErr error
 
-			createProfilesJsonFile(fileLoc)
+			createProfilesJsonFile(outputLoc + ".json")
 
 			params := url.Values{}
 			params.Add("metadata", "true") // always include metadata for limit/offsets
@@ -83,7 +85,7 @@ func newProfileGetCommand() *cobra.Command {
 			utilities.CheckError(err)
 
 			if getLimitInt > respMetaData.Metadata.Total {
-				getLimit = strconv.Itoa(respMetaData.Metadata.Total)
+				// getLimit = strconv.Itoa(respMetaData.Metadata.Total)
 				getLimitInt = respMetaData.Metadata.Total
 			}
 
@@ -118,13 +120,17 @@ func newProfileGetCommand() *cobra.Command {
 					bar.Add(limitInt) // increment progress
 				}
 
-				printToFile(fileLoc, profile_result, lastLoop)
+				printJsonToFile(outputLoc+".json", profile_result, lastLoop)
 			}
 
 			// jsonData, _ := json.MarshalIndent(profile_result, "", "    ")
 			// fmt.Println(string(jsonData))
 
-			endProfilesJsonFile(fileLoc)
+			endProfilesJsonFile(outputLoc + ".json")
+
+			convertJSONToCSV(outputLoc+".json", outputLoc+".csv")
+
+			fmt.Println("\n" + "Profile data stored in " + outputLoc)
 
 			return nil
 		},
@@ -136,10 +142,9 @@ func newProfileGetCommand() *cobra.Command {
 	cmd.Flags().StringP("name", "n", "", "Name of the profile(s) to look for")
 	cmd.Flags().StringP("force_backend", "b", "", "Force the Profile Service or Identity Suite controllers")
 	cmd.Flags().StringP("limit", "l", strconv.Itoa(configs.GetDefaultLimitParam()), "Limit for each GET request")
-	cmd.Flags().StringP("file", "f", "", "Set the output location of the Profile Data")
 	cmd.Flags().StringP("get_limit", "g", "", "Set a Get limit for how many profiles to pull back (default is All profiles)")
 
-	cmd.MarkFlagRequired("file")
+	cmd.MarkFlagRequired("file_type")
 
 	return cmd
 }

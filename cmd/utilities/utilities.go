@@ -230,3 +230,58 @@ func CheckError(err error) {
 		log.Fatal(err)
 	}
 }
+
+/*
+func convertJSONToCSV(source string, destination string) error {
+	// 2. Read the JSON file into the struct array
+	sourceFile, err := os.Open(source)
+	utilities.CheckError(err)
+
+	defer sourceFile.Close()
+
+	var profileData []ProfileJsonFileData
+	if err := json.NewDecoder(sourceFile).Decode(&profileData); err != nil {
+		return err
+	}
+
+	// Attributes map[string]string `json:"attributes"`
+
+	var keys []string
+
+	for _, r := range profileData {
+		// fmt.Println(r.Attributes, r.Attributes["guests_name_ne_attribute"], r.Attributes["first_name"])
+		for k, _ := range r.Attributes {
+			keys = append(keys, k)
+		}
+	}
+
+	// 3. Create a new file to store CSV data
+	outputFile, err := os.Create(destination)
+	utilities.CheckError(err)
+
+	defer outputFile.Close()
+
+	// 4. Write the header of the CSV file and the successive rows by iterating through the JSON struct array
+	writer := csv.NewWriter(outputFile)
+	defer writer.Flush()
+
+	header := []string{"ID", "UID", "Name", "ProfileTypeID", "Status", "IDProofingStatus", "UpdatedAt", "CreatedAt"}
+	for _, k := range keys {
+		header = append(header, k)
+	}
+	err = writer.Write(header)
+	utilities.CheckError(err)
+
+	for _, r := range profileData {
+		var csvRow []string
+		csvRow = append(csvRow, r.ID, r.UID, r.Name, r.ProfileTypeID, r.IDProofingStatus, r.UpdatedAt, r.CreatedAt)
+
+		for j := 7; j < len(header); j++ {
+			csvRow = append(csvRow, r.Attributes[header[j]])
+		}
+		err = writer.Write(csvRow)
+		utilities.CheckError(err)
+	}
+	return nil
+}
+*/
