@@ -6,6 +6,7 @@ package profiles
 import (
 	"encoding/json"
 	"fmt"
+	"math"
 	"nerm/cmd/configs"
 	"nerm/cmd/utilities"
 	"net/url"
@@ -34,7 +35,14 @@ func newProfileGetCommand() *cobra.Command {
 			getLimit := cmd.Flags().Lookup("get_limit").Value.String()
 
 			limitInt, _ := strconv.Atoi(limit)
-			getLimitInt, _ := strconv.Atoi(getLimit)
+
+			var getLimitInt int
+
+			if getLimit != "" {
+				getLimitInt, _ = strconv.Atoi(getLimit)
+			} else {
+				getLimitInt = math.MaxInt
+			}
 
 			outputLoc := configs.GetOutputFolder() + configs.GetCurrentEnvironment() + "_Profile_Export" + strconv.Itoa(int(time.Now().Unix()))
 
@@ -143,8 +151,6 @@ func newProfileGetCommand() *cobra.Command {
 	cmd.Flags().StringP("force_backend", "b", "", "Force the Profile Service or Identity Suite controllers")
 	cmd.Flags().StringP("limit", "l", strconv.Itoa(configs.GetDefaultLimitParam()), "Limit for each GET request")
 	cmd.Flags().StringP("get_limit", "g", "", "Set a Get limit for how many profiles to pull back (default is All profiles)")
-
-	cmd.MarkFlagRequired("file_type")
 
 	return cmd
 }

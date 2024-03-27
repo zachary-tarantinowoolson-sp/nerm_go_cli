@@ -2,14 +2,21 @@
 
 Built with GO and Cobra
 
-## Configuration
+## Usage
+
+In a terminal, type `nerm -h` to see the available commands. Example:
+
+Use `nerm env` to CRUD environments in order to make use of the other commands (the nerm_config.yaml files gets created in the .nerm folder of your User directory)
+User `nerm profiles get` with optional flags to pull a JSON and CSV report of Profile dat from a tenant
+
+### Configuration
 There are default settings configured in the `settings.env` file. These are:
 - OUTPUT_FOLDER : Currently set to `default_output_location` . This is where files generate by this CLI tool will be sent to.
 - DEFAULT_LIMIT_PARAM : Currently set to `100`. This is the value which feeds the `limit` query parameter for GET requests.
 - DEFAULT_GET_LIMIT : Currently set to `Float::INFINITY`. This is the value which controls when bulk GET requests will stop. At Infinity, this will GET records until all records are recieved
 
 
-## ToDo
+#### ToDo
 - [x] Build environment manager
     - [x] Create
     - [x] Show
@@ -18,7 +25,7 @@ There are default settings configured in the `settings.env` file. These are:
     - [x] Update
     - [x] List all
 - [x] Health Check
-- [ ] Pulling profiles into a report
+- [x] Pulling profiles into a report
     - Allow query parameters 
     - Print to a file / json to csv
 - [x] Basic Profile Counts
