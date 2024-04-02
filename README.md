@@ -40,6 +40,18 @@ There are default settings configured in the `nerm_config.yaml` file (in the .ne
     - Show Profile counts based on status and for each profile type
     - Table display
 - [ ] Advanced Searching
+    - [ ] See all saved Searches (list)
+    - [ ] Create/Run Search via file (-f)
+    - [ ] Create Search via prompts (-c)
+        - Utility for getting all stored attributes
+        - Utility for getting Profile Types
+        - Creating a search both saves it to the app and stores the id / name to yaml
+- [ ] Updating profiles
+    - [ ] using JSON from a File
+    - [ ] using prompts or flags for what attributes / values to set
+- [ ] Creating profiles
+    - [ ] using JSON from a File
+    - [ ] using prompts or flags for what attributes / values to set
 - [ ] IDP reporting
     - Get records
     - Delete records
@@ -49,4 +61,3 @@ There are default settings configured in the `nerm_config.yaml` file (in the .ne
     - using a settings file to link workflow name to workflow ID (readability)
 - [ ] Input error checking (number of profile type, env, etc is within range)
 - [ ] Job status table for mass proifle change / impot
-- [ ] Add limit, profile type and forcebacked to pull_profiles
