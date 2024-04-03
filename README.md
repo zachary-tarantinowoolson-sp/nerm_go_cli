@@ -56,7 +56,7 @@ There are default settings configured in the `nerm_config.yaml` file (in the .ne
     - Get records
     - Delete records
     - Importer
-- [ ] Workflow Session searching and reporting
+- [x] Workflow Session searching and reporting
     - pull last x days of failed workflows 
 - [ ] Input error checking (number of profile type, env, etc is within range)
 - [ ] Job status table for mass proifle change / impot
