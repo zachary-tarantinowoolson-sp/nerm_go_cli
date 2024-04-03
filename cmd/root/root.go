@@ -7,6 +7,7 @@ import (
 	"nerm/cmd/environment"
 	"nerm/cmd/health_check"
 	"nerm/cmd/profiles"
+	"nerm/cmd/workflow_sessions"
 	"os"
 
 	"github.com/spf13/cobra"
@@ -46,6 +47,7 @@ func NewRootCommand() *cobra.Command {
 		environment.NewEnvironmentCommand(),
 		health_check.NewHealthCheckCommand(),
 		profiles.NewProfilesCommand(),
+		workflow_sessions.NewWorkflowSessionsCommand(),
 	)
 
 	return root

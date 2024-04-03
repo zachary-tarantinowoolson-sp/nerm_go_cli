@@ -6,8 +6,10 @@ package workflow_sessions
 import (
 	"encoding/csv"
 	"encoding/json"
+	"fmt"
 	"nerm/cmd/utilities"
 	"os"
+	"slices"
 	"strings"
 
 	"github.com/spf13/cobra"
@@ -95,7 +97,7 @@ func endSessionsJsonFile(fileLoc string) {
 	defer file.Close()
 }
 
-func printJsonToFile(fileLoc string, jsonData SessionResponse, lastLoop bool) {
+func printJsonToFile(fileLoc string, jsonData SessionResponse) {
 
 	file, _ := os.OpenFile(fileLoc, os.O_APPEND|os.O_CREATE, os.ModePerm)
 	defer file.Close()
@@ -103,15 +105,15 @@ func printJsonToFile(fileLoc string, jsonData SessionResponse, lastLoop bool) {
 
 	for i, rec := range jsonData.Sessions {
 		encoder.Encode(rec)
-		if !lastLoop {
+
+		fmt.Println(len(jsonData.Sessions), i, i+1)
+		if (i + 1) != len(jsonData.Sessions) {
 			file.WriteString(strings.Trim(",", "\""))
-		} else if (i + 1) != len(jsonData.Sessions) {
-			file.WriteString(strings.Trim(",", "\""))
+			fmt.Println("in if", (i+1) != len(jsonData.Sessions))
 		}
 	}
 	// encoder := json.NewEncoder(file)
 	// encoder.Encode(jsonData)
-	defer file.Close()
 }
 
 func convertJSONToCSV(source string, destination string) error {
@@ -134,6 +136,9 @@ func convertJSONToCSV(source string, destination string) error {
 		}
 	}
 
+	slices.Sort(keys)           // sort a-z
+	keys = slices.Compact(keys) // remove duplicates
+
 	// Create a new file to store CSV data
 	outputFile, err := os.Create(destination)
 	utilities.CheckError(err)
@@ -155,7 +160,7 @@ func convertJSONToCSV(source string, destination string) error {
 		var csvRow []string
 		csvRow = append(csvRow, r.ID, r.UID, r.WorkflowID, r.RequesterType, r.RequesterID, r.ProfileID, r.Status, r.UpdatedAt, r.CreatedAt)
 
-		for j := 7; j < len(header); j++ {
+		for j := 9; j < len(header); j++ {
 			csvRow = append(csvRow, r.Attributes[header[j]])
 		}
 		err = writer.Write(csvRow)

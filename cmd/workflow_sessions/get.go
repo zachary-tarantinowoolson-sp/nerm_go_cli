@@ -34,6 +34,9 @@ func newSessionsGetCommand() *cobra.Command {
 			limit := cmd.Flags().Lookup("limit").Value.String()
 			getLimit := cmd.Flags().Lookup("get_limit").Value.String()
 
+			days, daysErr := strconv.Atoi(cmd.Flags().Lookup("days").Value.String())
+			utilities.CheckError(daysErr)
+
 			limitInt, _ := strconv.Atoi(limit)
 
 			var getLimitInt int
@@ -98,15 +101,14 @@ func newSessionsGetCommand() *cobra.Command {
 			}
 
 			bar := progressbar.Default(int64(getLimitInt)) // set progress to number of profile types found
-			lastLoop := false                              // used to determine where to add commas inthe json file, and for progressbar
 
 			for offset := 0; offset < getLimitInt; offset = offset + limitInt {
-				var sessions SessionResponse
+				var sessions SessionResponse      // this round of sessions from Get
+				var finalSessions SessionResponse // the sessions that will be put into the file
 
 				params.Add("offset", strconv.Itoa(offset))
 
 				resp, requestErr = utilities.MakeAPIRequests("get", "workflow_sessions", id, params.Encode(), nil)
-
 				utilities.CheckError(requestErr)
 
 				err := json.Unmarshal(resp, &sessions)
@@ -117,16 +119,24 @@ func newSessionsGetCommand() *cobra.Command {
 
 				if (offset + limitInt) >= getLimitInt {
 					bar.Set(getLimitInt)
-					lastLoop = true
-				}
-
-				if lastLoop {
-					bar.Set(getLimitInt)
 				} else {
 					bar.Add(limitInt) // increment progress
 				}
 
-				printJsonToFile(outputLoc+".json", sessions, lastLoop)
+				for _, rec := range sessions.Sessions {
+					t := time.Now().AddDate(0, 0, (days * -1))
+					compareDate := time.Date(t.Year(), t.Month(), t.Day(), 0, 0, 0, 0, t.Location()) // zeros out the day
+
+					createdAtTime, dateErr := time.Parse(time.RFC3339, rec.CreatedAt)
+					utilities.CheckError(dateErr)
+
+					if createdAtTime.After(compareDate) {
+						fmt.Println("after")
+						finalSessions.Sessions = append(finalSessions.Sessions, rec)
+					}
+				}
+
+				printJsonToFile(outputLoc+".json", finalSessions)
 			}
 
 			endSessionsJsonFile(outputLoc + ".json")
@@ -146,6 +156,7 @@ func newSessionsGetCommand() *cobra.Command {
 	cmd.Flags().StringP("requester_id", "r", "", "Find all sessions that were run by a specific User")
 	cmd.Flags().StringP("limit", "l", strconv.Itoa(configs.GetDefaultLimitParam()), "Limit for each GET request")
 	cmd.Flags().StringP("get_limit", "g", "", "Set a Get limit for how many sessions to pull back (default is All sessions)")
+	cmd.Flags().StringP("days", "d", "", "Pull sessions from the last x days")
 
 	return cmd
 }

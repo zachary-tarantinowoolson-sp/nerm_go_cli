@@ -8,6 +8,7 @@ import (
 	"encoding/json"
 	"nerm/cmd/utilities"
 	"os"
+	"slices"
 	"strings"
 
 	"github.com/fatih/color"
@@ -148,6 +149,9 @@ func convertJSONToCSV(source string, destination string) error {
 			keys = append(keys, k)
 		}
 	}
+
+	slices.Sort(keys)           // sort a-z
+	keys = slices.Compact(keys) // remove duplicates
 
 	// Create a new file to store CSV data
 	outputFile, err := os.Create(destination)
