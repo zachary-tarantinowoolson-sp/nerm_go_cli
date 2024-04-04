@@ -131,7 +131,7 @@ func convertJSONToCSV(source string, destination string) error {
 	}
 
 	for _, r := range profileData {
-		for k, _ := range r.Attributes {
+		for k := range r.Attributes {
 			keys = append(keys, k)
 		}
 	}
