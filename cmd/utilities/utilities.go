@@ -212,14 +212,34 @@ func MakeGetRequest(url string, jsonStr []byte) ([]byte, error) {
 	req.Header.Add("Accept", "application/json")
 
 	resp, err := http.DefaultClient.Do(req)
+	CheckError(err)
+
+	respBody, err := io.ReadAll(resp.Body)
+	CheckError(err)
+	defer resp.Body.Close()
+
+	return respBody, nil
+}
+
+func RunAdvSearchRequest(req_id string, params string) ([]byte, error) {
+	tenant := configs.GetTenant()
+	baseurl := configs.GetBaseURL()
+	url := "https://" + tenant + "." + baseurl + "/api/advanced_search/" + req_id + "/run?" + params
+
+	req, err := http.NewRequest(http.MethodGet, url, nil)
 	if err != nil {
 		log.Fatal(err)
 	}
 
+	req.Header.Add("Authorization", configs.GetAPIToken())
+	req.Header.Add("Content-Type", "application/json")
+	req.Header.Add("Accept", "application/json")
+
+	resp, err := http.DefaultClient.Do(req)
+	CheckError(err)
+
 	respBody, err := io.ReadAll(resp.Body)
-	if err != nil {
-		log.Fatal(err)
-	}
+	CheckError(err)
 	defer resp.Body.Close()
 
 	return respBody, nil

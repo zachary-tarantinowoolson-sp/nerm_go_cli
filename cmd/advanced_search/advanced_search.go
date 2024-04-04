@@ -45,7 +45,7 @@ type ProfileResponse struct {
 		UpdatedAt        string            `json:"updated_at"`
 		CreatedAt        string            `json:"created_at"`
 		Attributes       map[string]string `json:"attributes"`
-	} `json:"profiles"`
+	} `json:"advanced_search"`
 }
 
 type ProfileJsonFileData struct {
@@ -84,6 +84,7 @@ func NewAdvancedSearchCommand() *cobra.Command {
 	cmd.AddCommand(
 		newAdvancedSearchListCommand(),
 		newAdvancedSearchShowCommand(),
+		newAdvancedSearchRunCommand(),
 	)
 
 	return cmd
@@ -126,7 +127,7 @@ func createAdvancedSearchJsonFile(fileLoc string) {
 	defer file.Close()
 }
 
-func endProfilesJsonFile(fileLoc string) {
+func endAdvancedSearchJsonFile(fileLoc string) {
 
 	file, _ := os.OpenFile(fileLoc, os.O_APPEND, os.ModePerm)
 	defer file.Close()
@@ -134,21 +135,25 @@ func endProfilesJsonFile(fileLoc string) {
 	defer file.Close()
 }
 
-func printJsonToFile(fileLoc string, jsonData ProfileResponse) {
+func addCommaToFile(fileLoc string) {
+	file, _ := os.OpenFile(fileLoc, os.O_APPEND|os.O_CREATE, os.ModePerm)
+	defer file.Close()
+	file.WriteString(strings.Trim(",", "\""))
+}
 
+func printJsonToFile(fileLoc string, jsonData ProfileResponse) {
 	file, _ := os.OpenFile(fileLoc, os.O_APPEND|os.O_CREATE, os.ModePerm)
 	defer file.Close()
 	encoder := json.NewEncoder(file)
 
 	for i, rec := range jsonData.Profiles {
 		encoder.Encode(rec)
+		// if !lastLoop {
+		// 	file.WriteString(strings.Trim(",", "\""))
 		if (i + 1) != len(jsonData.Profiles) {
 			file.WriteString(strings.Trim(",", "\""))
 		}
 	}
-	// encoder := json.NewEncoder(file)
-	// encoder.Encode(jsonData)
-	defer file.Close()
 }
 
 func convertJSONToCSV(source string, destination string) error {
@@ -166,7 +171,7 @@ func convertJSONToCSV(source string, destination string) error {
 	}
 
 	for _, r := range profileData {
-		for k, _ := range r.Attributes {
+		for k := range r.Attributes {
 			keys = append(keys, k)
 		}
 	}
@@ -185,9 +190,7 @@ func convertJSONToCSV(source string, destination string) error {
 	defer writer.Flush()
 
 	header := []string{"ID", "UID", "Name", "ProfileTypeID", "Status", "IDProofingStatus", "UpdatedAt", "CreatedAt"}
-	for _, k := range keys {
-		header = append(header, k)
-	}
+	header = append(header, keys...)
 	err = writer.Write(header)
 	utilities.CheckError(err)
 
