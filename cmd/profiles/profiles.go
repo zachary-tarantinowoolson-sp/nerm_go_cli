@@ -145,7 +145,7 @@ func convertJSONToCSV(source string, destination string) error {
 	}
 
 	for _, r := range profileData {
-		for k, _ := range r.Attributes {
+		for k := range r.Attributes {
 			keys = append(keys, k)
 		}
 	}
@@ -164,9 +164,12 @@ func convertJSONToCSV(source string, destination string) error {
 	defer writer.Flush()
 
 	header := []string{"ID", "UID", "Name", "ProfileTypeID", "Status", "IDProofingStatus", "UpdatedAt", "CreatedAt"}
-	for _, k := range keys {
-		header = append(header, k)
-	}
+	// for _, k := range keys {
+	// 	header = append(header, k)
+	// }
+
+	header = append(header, keys...)
+
 	err = writer.Write(header)
 	utilities.CheckError(err)
 

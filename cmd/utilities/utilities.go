@@ -75,7 +75,7 @@ func CreateEnvironment(environmentName string) error {
 	var y string
 	re := bufio.NewReader(os.Stdin)
 	for {
-		fmt.Fprint(os.Stderr, "Please enter a new Base URL or press enter if the following is correct (https://tenant.{{baseurl}}.com) ("+baseurl+"):")
+		fmt.Fprint(os.Stderr, "Please enter a new Base URL or press enter if the following is correct (https://tenant.{{baseurl}}) ("+baseurl+"):")
 		y, _ = re.ReadString('\n')
 		if y != "" {
 			break
@@ -136,7 +136,7 @@ func UpdateEnvironment(environmentName string) error {
 	var y string
 	re := bufio.NewReader(os.Stdin)
 	for {
-		fmt.Fprint(os.Stderr, "Please enter a new Base URL or press enter if the following is correct (https://tenant.{{baseurl}}.com) ("+baseurl+"):")
+		fmt.Fprint(os.Stderr, "Please enter a new Base URL or press enter if the following is correct (https://tenant.{{baseurl}}) ("+baseurl+"):")
 		y, _ = re.ReadString('\n')
 		if y != "" {
 			break
@@ -175,7 +175,7 @@ func MakeAPIRequests(method string, endpoint string, req_id string, params strin
 	tenant := configs.GetTenant()
 	baseurl := configs.GetBaseURL()
 
-	url := "http://" + tenant + "." + baseurl + "/api/" + endpoint
+	url := "https://" + tenant + "." + baseurl + "/api/" + endpoint
 	if req_id != "" {
 		url = url + "/" + req_id + "?" + params
 	} else {

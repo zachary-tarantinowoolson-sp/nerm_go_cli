@@ -6,6 +6,7 @@ package root
 import (
 	"nerm/cmd/environment"
 	"nerm/cmd/health_check"
+	"nerm/cmd/identity_proofing"
 	"nerm/cmd/profiles"
 	"nerm/cmd/workflow_sessions"
 	"os"
@@ -48,6 +49,7 @@ func NewRootCommand() *cobra.Command {
 		health_check.NewHealthCheckCommand(),
 		profiles.NewProfilesCommand(),
 		workflow_sessions.NewWorkflowSessionsCommand(),
+		identity_proofing.NewIdentityProofingCommand(),
 	)
 
 	return root
