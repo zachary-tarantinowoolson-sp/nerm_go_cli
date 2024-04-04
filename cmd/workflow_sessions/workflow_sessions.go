@@ -109,7 +109,7 @@ func printJsonToFile(fileLoc string, jsonData SessionResponse) {
 		fmt.Println(len(jsonData.Sessions), i, i+1)
 		if (i + 1) != len(jsonData.Sessions) {
 			file.WriteString(strings.Trim(",", "\""))
-			fmt.Println("in if", (i+1) != len(jsonData.Sessions))
+			// fmt.Println("in if", (i+1) != len(jsonData.Sessions))
 		}
 	}
 	// encoder := json.NewEncoder(file)
@@ -150,9 +150,10 @@ func convertJSONToCSV(source string, destination string) error {
 	defer writer.Flush()
 
 	header := []string{"ID", "UID", "WorkflowID", "RequesterType", "RequesterID", "ProfileID", "Status", "UpdatedAt", "CreatedAt"}
-	for _, k := range keys {
-		header = append(header, k)
-	}
+	// for _, k := range keys {
+	// 	header = append(header, k)
+	// }
+	header = append(header, keys...)
 	err = writer.Write(header)
 	utilities.CheckError(err)
 
