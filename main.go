@@ -22,10 +22,10 @@ func init() {
 }
 
 func main() {
-	PrintMemUsage()
+	// PrintMemUsage()
 	_ = rootCmd.Execute()
 
-	PrintMemUsage()
+	// PrintMemUsage()
 	if save_error := configs.SaveConfig(); save_error != nil {
 		log.Print("Issue saving config file", "error", save_error)
 	}
