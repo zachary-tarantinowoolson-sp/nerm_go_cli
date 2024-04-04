@@ -16,13 +16,22 @@ import (
 	"github.com/spf13/cobra"
 )
 
-type ProfileTypeResponse struct {
-	ProfileTypes []struct {
-		Name     string `json:"name"`
-		ID       string `json:"id"`
-		UID      string `json:"uid"`
-		Category string `json:"category"`
-	} `json:"profile_types"`
+type AdvancedSearchConfig struct {
+	AdvancedSearch []struct {
+		ID                       string `json:"id"`
+		UID                      string `json:"uid"`
+		Label                    string `json:"label"`
+		ConditionRulesAttributes []struct {
+			ID                  string `json:"id"`
+			UID                 string `json:"uid"`
+			Type                string `json:"type"`
+			ConditionType       string `json:"condition_type"`
+			ConditionObjectID   string `json:"condition_object_id"`
+			ConditionObjectType string `json:"condition_object_type"`
+			ComparisonOperator  string `json:"comparison_operator"`
+			Value               string `json:"value"`
+		} `json:"condition_rules_attributes"`
+	} `json:"advanced_search"`
 }
 
 type ProfileResponse struct {
@@ -60,23 +69,38 @@ type ResponseMetaData struct {
 	} `json:"_metadata"`
 }
 
-func NewProfilesCommand() *cobra.Command {
+func NewAdvancedSearchCommand() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:     "profiles",
-		Short:   "CRUD Profile data from an eviroment",
-		Long:    "Create, read, update, and delete Profiles. This allows an admin to execute commands against a specified NERM tenant",
-		Example: "nerm profiles count | nerm profiles get",
-		Aliases: []string{"p"},
+		Use:     "advsearch",
+		Short:   "Advanced Search queries",
+		Long:    "Use and build Advanced Search queries to generate reports of Profiles",
+		Example: "nerm advsearch show | nerm a run",
+		Aliases: []string{"a"},
 		Run: func(cmd *cobra.Command, args []string) {
 			cmd.Help()
 		},
 	}
 
 	cmd.AddCommand(
-		newAdvancedSearchGetCommand(),
+		newAdvancedSearchListCommand(),
+		newAdvancedSearchShowCommand(),
 	)
 
 	return cmd
+}
+
+func printAdvSearchListTable(data [][]string) {
+	headerFmt := color.New(color.FgGreen, color.Underline).SprintfFunc()
+	columnFmt := color.New(color.FgYellow).SprintfFunc()
+
+	tbl := table.New("Label", "ID")
+	tbl.WithHeaderFormatter(headerFmt).WithFirstColumnFormatter(columnFmt)
+
+	for _, row := range data {
+		tbl.AddRow(row[0], row[1])
+	}
+
+	tbl.Print()
 }
 
 func printCountTable(data [][]string) {
@@ -93,7 +117,7 @@ func printCountTable(data [][]string) {
 	tbl.Print()
 }
 
-func createProfilesJsonFile(fileLoc string) {
+func createAdvancedSearchJsonFile(fileLoc string) {
 
 	file, _ := os.OpenFile(fileLoc, os.O_CREATE|os.O_TRUNC, os.ModePerm)
 	defer file.Close()

@@ -4,6 +4,7 @@ Copyright © 2024 Zachary Tarantino-Woolson <zachary.tarantino@sailpoint.com>
 package root
 
 import (
+	"nerm/cmd/advanced_search"
 	"nerm/cmd/environment"
 	"nerm/cmd/health_check"
 	"nerm/cmd/identity_proofing"
@@ -50,6 +51,7 @@ func NewRootCommand() *cobra.Command {
 		profiles.NewProfilesCommand(),
 		workflow_sessions.NewWorkflowSessionsCommand(),
 		identity_proofing.NewIdentityProofingCommand(),
+		advanced_search.NewAdvancedSearchCommand(),
 	)
 
 	return root
