@@ -40,7 +40,7 @@ There are default settings configured in the `nerm_config.yaml` file (in the .ne
     - Show Profile counts based on status and for each profile type
     - Table display
 - [ ] Advanced Searching
-    - [ ] See all saved Searches (list)
+    - [x] See all saved Searches (list)
     - [ ] Create/Run Search via file (-f)
     - [ ] Create Search via prompts (-c)
         - Utility for getting all stored attributes
@@ -52,10 +52,13 @@ There are default settings configured in the `nerm_config.yaml` file (in the .ne
 - [ ] Creating profiles
     - [ ] using JSON from a File
     - [ ] using prompts or flags for what attributes / values to set
-- [ ] IDP reporting
+- [ ] Consolidation reporting
     - Get records
     - Delete records
     - Importer
+- [x] ID Proofing reporting
+    - Generate a Report of records
+    - Get simple count of all pass/fail results
 - [x] Workflow Session searching and reporting
     - pull last x days of failed workflows 
 - [ ] Input error checking (number of profile type, env, etc is within range)
