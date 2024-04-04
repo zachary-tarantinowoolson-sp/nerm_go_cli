@@ -6,6 +6,7 @@ package identity_proofing
 import (
 	"encoding/json"
 	"fmt"
+	"math"
 	"nerm/cmd/configs"
 	"nerm/cmd/utilities"
 	"net/url"
@@ -27,11 +28,9 @@ func newIDProofingResultGetCommand() *cobra.Command {
 			profile_id := cmd.Flags().Lookup("profile_id").Value.String()
 			workflow_session_id := cmd.Flags().Lookup("workflow_session_id").Value.String()
 			result := cmd.Flags().Lookup("result").Value.String()
-			limit := cmd.Flags().Lookup("limit").Value.String()
+			limitInt := 100
 
-			limitInt, _ := strconv.Atoi(limit)
-
-			var getLimitInt int
+			getLimitInt := math.MaxInt32
 
 			outputLoc := configs.GetOutputFolder() + configs.GetCurrentEnvironment() + "_IDP_Export" + strconv.Itoa(int(time.Now().Unix()))
 
@@ -53,13 +52,8 @@ func newIDProofingResultGetCommand() *cobra.Command {
 			if result != "" {
 				params.Add("result", result)
 			}
-			if limitInt > 100 {
-				fmt.Println("Limit can not be over 500")
-				limit = "100"
-				params.Add("limit", "100")
-			} else {
-				params.Add("limit", limit)
-			}
+
+			params.Add("limit", "100")
 
 			// make first call to get the total number of results to be returned
 			resp, requestErr = utilities.MakeAPIRequests("get", "identity_proofing_results", "", params.Encode(), nil)
@@ -76,7 +70,6 @@ func newIDProofingResultGetCommand() *cobra.Command {
 			utilities.CheckError(err)
 
 			if getLimitInt > respMetaData.Metadata.Total {
-				// getLimit = strconv.Itoa(respMetaData.Metadata.Total)
 				getLimitInt = respMetaData.Metadata.Total
 			}
 
@@ -117,7 +110,6 @@ func newIDProofingResultGetCommand() *cobra.Command {
 	cmd.Flags().StringP("profile_id", "p", "", "ID of a specific Profile")
 	cmd.Flags().StringP("workflow_session_id", "w", "", "ID of a specific Workflow Session")
 	cmd.Flags().StringP("result", "r", "", "Find IDP results based on Pass/Fail")
-	cmd.Flags().StringP("limit", "l", strconv.Itoa(configs.GetDefaultLimitParam()), "Limit for each GET request")
 
 	return cmd
 }

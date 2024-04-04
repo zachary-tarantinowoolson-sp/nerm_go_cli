@@ -6,6 +6,7 @@ package identity_proofing
 import (
 	"encoding/csv"
 	"encoding/json"
+	"fmt"
 	"nerm/cmd/utilities"
 	"os"
 	"slices"
@@ -106,6 +107,7 @@ func printJsonToFile(fileLoc string, jsonData IdentityProofingResponse) {
 	encoder := json.NewEncoder(file)
 
 	for i, rec := range jsonData.IdentityProofingResults {
+		fmt.Println(rec)
 		encoder.Encode(rec)
 		if (i + 1) != len(jsonData.IdentityProofingResults) {
 			file.WriteString(strings.Trim(",", "\""))
