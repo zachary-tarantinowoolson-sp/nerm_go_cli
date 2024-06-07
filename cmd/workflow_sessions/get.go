@@ -22,7 +22,7 @@ func newSessionsGetCommand() *cobra.Command {
 		Use:     "get",
 		Short:   "Gets Workflow Sessions from current environment",
 		Long:    "Pulls Workflow Sessions from current environment based on query parameters. Stores data in a CSV and JSON file at the defaul output location",
-		Example: "nerm sessions get --profile_id 1234abcd-1234-abcd-5678-12345abcd5678 ",
+		Example: "nerm sessions get --status failed",
 		Aliases: []string{"g"},
 		RunE: func(cmd *cobra.Command, args []string) error {
 
@@ -86,10 +86,10 @@ func newSessionsGetCommand() *cobra.Command {
 			// make first call to get the total number of sessisions to be returned
 			params.Add("limit", "1")
 			resp, requestErr = utilities.MakeAPIRequests("get", "workflow_sessions", id, params.Encode(), nil)
-			if limitInt > 500 {
-				fmt.Println("Limit can not be over 500")
-				limit = "500"
-				params.Set("limit", "500")
+			if limitInt > 100 {
+				fmt.Println("Limit can not be over 100")
+				limit = "100"
+				params.Set("limit", "100")
 			} else {
 				params.Set("limit", limit)
 			}
@@ -134,18 +134,28 @@ func newSessionsGetCommand() *cobra.Command {
 					bar.Add(limitInt) // increment progress
 				}
 
-				for _, rec := range sessions.Sessions {
-					t := time.Now().AddDate(0, 0, (days * -1))
-					compareDate := time.Date(t.Year(), t.Month(), t.Day(), 0, 0, 0, 0, t.Location()) // zeros out the day
+				fmt.Println(resp)
 
-					createdAtTime, dateErr := time.Parse(time.RFC3339, rec.CreatedAt)
-					utilities.CheckError(dateErr)
+				if dayString != "" {
+					for _, rec := range sessions.Sessions {
+						t := time.Now().AddDate(0, 0, (days * -1))
+						compareDate := time.Date(t.Year(), t.Month(), t.Day(), 0, 0, 0, 0, t.Location()) // zeros out the day
 
-					if createdAtTime.After(compareDate) {
-						// fmt.Println("after")
+						createdAtTime, dateErr := time.Parse(time.RFC3339, rec.CreatedAt)
+						utilities.CheckError(dateErr)
+
+						if createdAtTime.After(compareDate) {
+							// fmt.Println("after")
+							finalSessions.Sessions = append(finalSessions.Sessions, rec)
+						}
+					}
+				} else {
+					for _, rec := range sessions.Sessions {
 						finalSessions.Sessions = append(finalSessions.Sessions, rec)
 					}
 				}
+
+				fmt.Println(finalSessions)
 
 				printJsonToFile(outputLoc+".json", finalSessions)
 			}
