@@ -21,9 +21,9 @@ func newAdvancedSearchRunCommand() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "run",
 		Short:   "Pulls Profiles from current environment",
-		Long:    "Pulls Profiles from current environment based on query parameters. Stores data in a CSV and JSON file at the defaul output location",
-		Example: "nerm profiles run --profile_type",
-		Aliases: []string{"g"},
+		Long:    "Pulls Profiles from current environment based on an advanced Search. Stores data in a CSV and JSON file at the defaul output location",
+		Example: "nerm advsearch run --id 123",
+		Aliases: []string{"r"},
 		RunE: func(cmd *cobra.Command, args []string) error {
 
 			outputLoc := configs.GetOutputFolder() + configs.GetCurrentEnvironment() + "_AdvancedSearch_Export" + strconv.Itoa(int(time.Now().Unix()))
@@ -95,7 +95,7 @@ func newAdvancedSearchRunCommand() *cobra.Command {
 			return nil
 		},
 	}
-	cmd.Flags().StringP("id", "i", "", "ID of a specific Profile")
+	cmd.Flags().StringP("id", "i", "", "ID of a specific advanced Search")
 	cmd.Flags().StringP("limit", "l", strconv.Itoa(configs.GetDefaultLimitParam()), "Limit for each GET request")
 	cmd.Flags().StringP("get_limit", "g", "", "Set a Get limit for how many profiles to pull back (default is All profiles)")
 

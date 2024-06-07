@@ -1,6 +1,8 @@
 /*
 Copyright © 2024 Zachary Tarantino-Woolson <zachary.tarantino@sailpoint.com>
 */
+
+// CLONED FROM GET - NEEDS TO BE UPDATED STILL
 package workflow_sessions
 
 import (
@@ -17,12 +19,12 @@ import (
 	"github.com/spf13/cobra"
 )
 
-func newSessionsGetCommand() *cobra.Command {
+func newSessionsCreateCommand() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:     "get",
-		Short:   "Gets Workflow Sessions from current environment",
-		Long:    "Pulls Workflow Sessions from current environment based on query parameters. Stores data in a CSV and JSON file at the defaul output location",
-		Example: "nerm sessions get --profile_id 1234abcd-1234-abcd-5678-12345abcd5678 ",
+		Use:     "Create",
+		Short:   "Create Workflow Sessions",
+		Long:    "Uses data from a JSON or CSV file to generate workflow sessions in the current tenant",
+		Example: "nerm sessions create -f something.csv ",
 		Aliases: []string{"g"},
 		RunE: func(cmd *cobra.Command, args []string) error {
 

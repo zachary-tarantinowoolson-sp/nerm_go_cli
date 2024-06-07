@@ -6,7 +6,6 @@ package workflow_sessions
 import (
 	"encoding/csv"
 	"encoding/json"
-	"fmt"
 	"nerm/cmd/utilities"
 	"os"
 	"slices"
@@ -75,6 +74,8 @@ func NewWorkflowSessionsCommand() *cobra.Command {
 
 	cmd.AddCommand(
 		newSessionsGetCommand(),
+		newSessionsCreateCommand(),
+		newSessionsRerunCommand(),
 	)
 
 	return cmd
@@ -106,7 +107,7 @@ func printJsonToFile(fileLoc string, jsonData SessionResponse) {
 	for i, rec := range jsonData.Sessions {
 		encoder.Encode(rec)
 
-		fmt.Println(len(jsonData.Sessions), i, i+1)
+		// fmt.Println(len(jsonData.Sessions), i, i+1)
 		if (i + 1) != len(jsonData.Sessions) {
 			file.WriteString(strings.Trim(",", "\""))
 			// fmt.Println("in if", (i+1) != len(jsonData.Sessions))
@@ -131,7 +132,7 @@ func convertJSONToCSV(source string, destination string) error {
 	}
 
 	for _, r := range sessionData {
-		for k, _ := range r.Attributes {
+		for k := range r.Attributes {
 			keys = append(keys, k)
 		}
 	}

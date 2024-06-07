@@ -85,6 +85,7 @@ func NewAdvancedSearchCommand() *cobra.Command {
 		newAdvancedSearchListCommand(),
 		newAdvancedSearchShowCommand(),
 		newAdvancedSearchRunCommand(),
+		newAdvancedSearchCreateCommand(),
 	)
 
 	return cmd
