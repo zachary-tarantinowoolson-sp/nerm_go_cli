@@ -42,6 +42,9 @@ func newSessionsGetCommand() *cobra.Command {
 			limit := cmd.Flags().Lookup("limit").Value.String()
 			getLimit := cmd.Flags().Lookup("get_limit").Value.String()
 
+			// humanReadable, humanReadableError := cmd.Flags().GetBool("human_readable")
+			// utilities.CheckError(humanReadableError)
+
 			dayString := cmd.Flags().Lookup("days").Value.String()
 
 			if dayString != "" {
@@ -86,14 +89,18 @@ func newSessionsGetCommand() *cobra.Command {
 			// make first call to get the total number of sessisions to be returned
 			params.Add("limit", "1")
 			resp, requestErr = utilities.MakeAPIRequests("get", "workflow_sessions", id, params.Encode(), nil)
+			utilities.CheckError(requestErr)
+
+			// Set limit to 100 if it was over 100. Then set it to getLimit if it is lower than the definded limit
 			if limitInt > 100 {
 				fmt.Println("Limit can not be over 100")
 				limit = "100"
-				params.Set("limit", "100")
-			} else {
-				params.Set("limit", limit)
 			}
-			utilities.CheckError(requestErr)
+			if getLimitInt < limitInt {
+				limitInt = getLimitInt
+				limit = getLimit
+			}
+			params.Set("limit", limit)
 
 			var sessions_result SessionResponse
 			var respMetaData ResponseMetaData
@@ -163,8 +170,7 @@ func newSessionsGetCommand() *cobra.Command {
 						}
 					*/
 
-				if dayString != "" {
-					for _, rec := range sessions.Sessions {
+					if dayString != "" {
 						t := time.Now().AddDate(0, 0, (days * -1))
 						compareDate := time.Date(t.Year(), t.Month(), t.Day(), 0, 0, 0, 0, t.Location()) // zeros out the day
 
@@ -175,14 +181,10 @@ func newSessionsGetCommand() *cobra.Command {
 							// fmt.Println("after")
 							finalSessions.Sessions = append(finalSessions.Sessions, rec)
 						}
-					}
-				} else {
-					for _, rec := range sessions.Sessions {
+					} else {
 						finalSessions.Sessions = append(finalSessions.Sessions, rec)
 					}
 				}
-
-				fmt.Println(finalSessions)
 
 				printJsonToFile(outputLoc+".json", finalSessions)
 			}
@@ -205,6 +207,7 @@ func newSessionsGetCommand() *cobra.Command {
 	cmd.Flags().StringP("limit", "l", strconv.Itoa(configs.GetDefaultLimitParam()), "Limit for each GET request")
 	cmd.Flags().StringP("get_limit", "g", "", "Set a Get limit for how many sessions to pull back (default is All sessions)")
 	cmd.Flags().StringP("days", "d", "", "Pull sessions from the last x days")
+	cmd.Flags().Bool("human_readable", false, "Setting to True adds Human Readable data to sessions (Requester's Login, Profile's Name)")
 
 	return cmd
 }
