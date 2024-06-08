@@ -134,7 +134,34 @@ func newSessionsGetCommand() *cobra.Command {
 					bar.Add(limitInt) // increment progress
 				}
 
-				fmt.Println(resp)
+				for _, rec := range sessions.Sessions {
+
+					/*
+						if humanReadable {
+							// Currently Not In Use
+							// TODO: Build a map of previously found profiles and Users to reduce the number of requests made..
+							// TODO: Re-define structs to add these values
+							// TODO: Re-define how CSV gets its headers to allow for these values dynamically
+							var profile ProfileResponse
+							profileResp, profileRequestErr := utilities.MakeAPIRequests("get", "profiles", rec.ProfileID, "exclude_attributes=true", nil)
+							utilities.CheckError(profileRequestErr)
+
+							profileUnmarshalErr := json.Unmarshal(profileResp, &profile)
+							utilities.CheckError(profileUnmarshalErr)
+
+							// profile.Name
+
+							var user UserResponse
+							userResp, userRequestErr := utilities.MakeAPIRequests("get", "profiles", rec.ProfileID, "exclude_attributes=true", nil)
+							utilities.CheckError(userRequestErr)
+
+							userUnmarshalErr := json.Unmarshal(userResp, &user)
+							utilities.CheckError(userUnmarshalErr)
+
+							// user.User.Login
+
+						}
+					*/
 
 				if dayString != "" {
 					for _, rec := range sessions.Sessions {
