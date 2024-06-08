@@ -23,6 +23,22 @@ type ProfileTypeResponse struct {
 	} `json:"profile_types"`
 }
 
+type ProfileResponse struct {
+	Profile struct {
+		ID   string `json:"id"`
+		Name string `json:"name"`
+	} `json:"profile"`
+}
+
+type ResponseMetaData struct {
+	Metadata struct {
+		Limit  int    `json:"limit"`
+		Offset int    `json:"offset"`
+		Total  int    `json:"total"`
+		Next   string `json:"next"`
+	} `json:"_metadata"`
+}
+
 type SessionResponse struct { // full response with header
 	Sessions []struct {
 		ID            string            `json:"id"`
@@ -51,13 +67,14 @@ type SessionJsonFileData struct { // individual sessions
 	Attributes    map[string]string `json:"attributes"`
 }
 
-type ResponseMetaData struct {
-	Metadata struct {
-		Limit  int    `json:"limit"`
-		Offset int    `json:"offset"`
-		Total  int    `json:"total"`
-		Next   string `json:"next"`
-	} `json:"_metadata"`
+type UserResponse struct {
+	User struct {
+		ID    string `json:"id"`
+		Type  string `json:"type"`
+		Name  string `json:"name"`
+		Email string `json:"email"`
+		Login string `json:"login"`
+	} `json:"user"`
 }
 
 func NewWorkflowSessionsCommand() *cobra.Command {
@@ -131,7 +148,7 @@ func convertJSONToCSV(source string, destination string) error {
 		return err
 	}
 
-	for _, r := range sessionData {
+	for _, r := range sessionData { // attribute keys
 		for k := range r.Attributes {
 			keys = append(keys, k)
 		}
@@ -154,7 +171,7 @@ func convertJSONToCSV(source string, destination string) error {
 	// for _, k := range keys {
 	// 	header = append(header, k)
 	// }
-	header = append(header, keys...)
+	header = append(header, keys...) // attribute keys
 	err = writer.Write(header)
 	utilities.CheckError(err)
 
