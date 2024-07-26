@@ -115,7 +115,7 @@ func endSessionsJsonFile(fileLoc string) {
 	defer file.Close()
 }
 
-func printJsonToFile(fileLoc string, jsonData SessionResponse) {
+func printJsonToFile(fileLoc string, jsonData SessionResponse, lastLoop bool) {
 
 	file, _ := os.OpenFile(fileLoc, os.O_APPEND|os.O_CREATE, os.ModePerm)
 	defer file.Close()
@@ -125,13 +125,16 @@ func printJsonToFile(fileLoc string, jsonData SessionResponse) {
 		encoder.Encode(rec)
 
 		// fmt.Println(len(jsonData.Sessions), i, i+1)
-		if (i + 1) != len(jsonData.Sessions) {
+		if !lastLoop {
+			file.WriteString(strings.Trim(",", "\""))
+		} else if (lastLoop) && ((i + 1) != len(jsonData.Sessions)) {
 			file.WriteString(strings.Trim(",", "\""))
 			// fmt.Println("in if", (i+1) != len(jsonData.Sessions))
 		}
 	}
 	// encoder := json.NewEncoder(file)
 	// encoder.Encode(jsonData)
+	defer file.Close()
 }
 
 func convertJSONToCSV(source string, destination string) error {
