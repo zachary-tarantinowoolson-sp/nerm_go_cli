@@ -120,6 +120,8 @@ func newSessionsGetCommand() *cobra.Command {
 
 			bar := progressbar.Default(int64(getLimitInt)) // set progress to number of profile types found
 
+			lastLoop := false
+
 			for offset := 0; offset < getLimitInt; offset = offset + limitInt {
 				var sessions SessionResponse      // this round of sessions from Get
 				var finalSessions SessionResponse // the sessions that will be put into the file
@@ -137,6 +139,7 @@ func newSessionsGetCommand() *cobra.Command {
 
 				if (offset + limitInt) >= getLimitInt {
 					bar.Set(getLimitInt)
+					lastLoop = true
 				} else {
 					bar.Add(limitInt) // increment progress
 				}
@@ -186,7 +189,7 @@ func newSessionsGetCommand() *cobra.Command {
 					}
 				}
 
-				printJsonToFile(outputLoc+".json", finalSessions)
+				printJsonToFile(outputLoc+".json", finalSessions, lastLoop)
 			}
 
 			endSessionsJsonFile(outputLoc + ".json")
