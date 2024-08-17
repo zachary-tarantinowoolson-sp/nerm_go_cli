@@ -86,6 +86,7 @@ func NewAdvancedSearchCommand() *cobra.Command {
 		newAdvancedSearchShowCommand(),
 		newAdvancedSearchRunCommand(),
 		newAdvancedSearchCreateCommand(),
+		newAdvancedSearchStoreCommand(),
 	)
 
 	return cmd
@@ -117,6 +118,22 @@ func printCountTable(data [][]string) {
 	}
 
 	tbl.Print()
+}
+
+func storeAdvancedSearchJsonFile(fileLoc string, jsonData AdvancedSearchConfig) {
+
+	file, _ := os.OpenFile(fileLoc, os.O_APPEND|os.O_CREATE, os.ModePerm)
+	defer file.Close()
+	encoder := json.NewEncoder(file)
+
+	for i, rec := range jsonData.AdvancedSearch {
+		encoder.Encode(rec)
+		// if !lastLoop {
+		// 	file.WriteString(strings.Trim(",", "\""))
+		if (i + 1) != len(jsonData.AdvancedSearch) {
+			file.WriteString(strings.Trim(",", "\""))
+		}
+	}
 }
 
 func createAdvancedSearchJsonFile(fileLoc string) {
