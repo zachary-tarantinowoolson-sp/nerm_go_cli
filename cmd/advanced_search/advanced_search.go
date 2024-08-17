@@ -18,19 +18,30 @@ import (
 
 type AdvancedSearchConfig struct {
 	AdvancedSearch []struct {
-		ID                       string `json:"id"`
-		UID                      string `json:"uid"`
-		Label                    string `json:"label"`
+		ID        string `json:"id"`
+		UID       string `json:"uid"`
+		Label     string `json:"label"`
+		CreatedAt string `json:"created_at"`
+		Searcher  struct {
+			ID            string `json:"id"`
+			UID           string `json:"uid"`
+			Name          string `json:"name"`
+			TokenID       string `json:"token_id"`
+			APIEventCount int    `json:"api_event_count"`
+		} `json:"searcher"`
 		ConditionRulesAttributes []struct {
 			ID                  string `json:"id"`
 			UID                 string `json:"uid"`
 			Type                string `json:"type"`
+			ConditionID         string `json:"condition_id"`
 			ConditionType       string `json:"condition_type"`
 			ConditionObjectID   string `json:"condition_object_id"`
 			ConditionObjectType string `json:"condition_object_type"`
 			ComparisonOperator  string `json:"comparison_operator"`
 			Value               string `json:"value"`
 		} `json:"condition_rules_attributes"`
+		AdvancedSearchRoles        []interface{} `json:"advanced_search_roles"`
+		AdvancedSearchProfileTypes []interface{} `json:"advanced_search_profile_types"`
 	} `json:"advanced_search"`
 }
 
