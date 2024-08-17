@@ -24,7 +24,7 @@ func newAdvancedSearchDownloadCommand() *cobra.Command {
 		Aliases: []string{"s"},
 		RunE: func(cmd *cobra.Command, args []string) error {
 			id := cmd.Flags().Lookup("id").Value.String()
-			var adv_searches AdvancedSearchConfig
+			var adv_searches AdvancedSearchConfigForDownload
 
 			params := url.Values{}
 			params.Add("id", id)
@@ -37,7 +37,7 @@ func newAdvancedSearchDownloadCommand() *cobra.Command {
 			outputLoc := configs.GetOutputFolder() + configs.GetCurrentEnvironment() + "_" + adv_searches.AdvancedSearch[0].Label + "_AdvancedSearch_Config" + strconv.Itoa(int(time.Now().Unix()))
 			storeAdvancedSearchJsonFile(outputLoc+".json", adv_searches)
 
-			fmt.Println("\n" + "Advanced Saerch config data stored in " + outputLoc)
+			fmt.Println("\n" + "Advanced Saerch config data stored in " + outputLoc + ".json")
 
 			return nil
 		},

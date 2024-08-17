@@ -45,6 +45,35 @@ type AdvancedSearchConfig struct {
 	} `json:"advanced_search"`
 }
 
+type AdvancedSearchConfigForDownload struct {
+	AdvancedSearch []struct {
+		ID                       string `json:"id"`
+		UID                      string `json:"uid"`
+		Label                    string `json:"label"`
+		ConditionRulesAttributes []struct {
+			ID                  string `json:"id"`
+			Type                string `json:"type"`
+			ConditionObjectID   string `json:"condition_object_id"`
+			ConditionObjectType string `json:"condition_object_type"`
+			ComparisonOperator  string `json:"comparison_operator"`
+			Value               string `json:"value"`
+		} `json:"condition_rules_attributes"`
+	} `json:"advanced_search"`
+}
+
+type AdvancedSearchConfigForUpload struct {
+	AdvancedSearch struct {
+		Label                    string `json:"label"`
+		ConditionRulesAttributes []struct {
+			Type                string `json:"type"`
+			ConditionObjectID   string `json:"condition_object_id"`
+			ConditionObjectType string `json:"condition_object_type"`
+			ComparisonOperator  string `json:"comparison_operator"`
+			Value               string `json:"value"`
+		} `json:"condition_rules_attributes"`
+	} `json:"advanced_search"`
+}
+
 type ProfileResponse struct {
 	Profiles []struct {
 		ID               string            `json:"id"`
@@ -131,11 +160,12 @@ func printCountTable(data [][]string) {
 	tbl.Print()
 }
 
-func storeAdvancedSearchJsonFile(fileLoc string, jsonData AdvancedSearchConfig) {
+func storeAdvancedSearchJsonFile(fileLoc string, jsonData AdvancedSearchConfigForDownload) {
 
 	file, _ := os.OpenFile(fileLoc, os.O_APPEND|os.O_CREATE, os.ModePerm)
 	defer file.Close()
 	encoder := json.NewEncoder(file)
+	file.WriteString("{\"advanced_search\":")
 
 	for i, rec := range jsonData.AdvancedSearch {
 		encoder.Encode(rec)
@@ -145,6 +175,23 @@ func storeAdvancedSearchJsonFile(fileLoc string, jsonData AdvancedSearchConfig) 
 			file.WriteString(strings.Trim(",", "\""))
 		}
 	}
+	file.WriteString("}")
+}
+
+func readAdvancedSearchJsonFile(fileLoc string) AdvancedSearchConfigForUpload {
+
+	// Read the JSON file into the struct array
+	sourceFile, err := os.Open(fileLoc)
+	utilities.CheckError(err)
+
+	defer sourceFile.Close()
+
+	var advSearch AdvancedSearchConfigForUpload
+	if err := json.NewDecoder(sourceFile).Decode(&advSearch); err != nil {
+		utilities.CheckError(err)
+	}
+
+	return advSearch
 }
 
 func createAdvancedSearchJsonFile(fileLoc string) {
