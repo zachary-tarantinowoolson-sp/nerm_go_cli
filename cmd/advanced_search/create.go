@@ -26,7 +26,6 @@ func newAdvancedSearchCreateCommand() *cobra.Command {
 			utilities.CheckError(err)
 
 			json_string := "{\"advanced_search\":" + string(formatted) + "}"
-			// fmt.Println(json_string)
 
 			_, requestErr := utilities.MakeAPIRequests("post", "advanced_search", "", "", []byte(json_string))
 			utilities.CheckError(requestErr)
