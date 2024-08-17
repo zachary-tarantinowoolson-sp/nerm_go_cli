@@ -47,6 +47,7 @@ There are default settings configured in the `nerm_config.yaml` file (in the .ne
         - Utility for getting all stored attributes
         - Utility for getting Profile Types
         - Creating a search both saves it to the app and stores the id / name to yaml
+        - use {{ }} syntax with csv header val as a way to use variables?
 - [ ] Updating profiles
     - [ ] using JSON from a File
     - [ ] using prompts or flags for what attributes / values to set
