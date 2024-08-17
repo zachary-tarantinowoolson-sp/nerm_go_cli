@@ -20,21 +20,20 @@ func newAdvancedSearchCreateCommand() *cobra.Command {
 		Aliases: []string{"c"},
 		RunE: func(cmd *cobra.Command, args []string) error {
 			file := cmd.Flags().Lookup("file").Value.String()
-			var adv_searches AdvancedSearchConfigForUpload
+			adv_searches := readAdvancedSearchJsonFile(file)
 
-			// params := url.Values{}
-			// params.Add("id", id)
-
-			// resp, requestErr := utilities.MakeAPIRequests("get", "advanced_search", "", params.Encode(), nil)
-			// utilities.CheckError(requestErr)
-			// err := json.Unmarshal(resp, &adv_searches)
-			// utilities.CheckError(err)
-
-			adv_searches = readAdvancedSearchJsonFile(file)
-
-			formatted, err := json.MarshalIndent(adv_searches.AdvancedSearch, "", "  ")
+			formatted, err := json.Marshal(adv_searches.AdvancedSearch)
 			utilities.CheckError(err)
-			fmt.Println(string(formatted))
+
+			json_string := "{\"advanced_search\":" + string(formatted) + "}"
+			// fmt.Println(json_string)
+
+			_, requestErr := utilities.MakeAPIRequests("post", "advanced_search", "", "", []byte(json_string))
+			utilities.CheckError(requestErr)
+
+			fmt.Println("Advanced Search  uploaded. New List:")
+
+			newAdvancedSearchListCommand().Execute()
 
 			return nil
 		},

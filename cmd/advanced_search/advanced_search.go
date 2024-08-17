@@ -146,19 +146,19 @@ func printAdvSearchListTable(data [][]string) {
 	tbl.Print()
 }
 
-func printCountTable(data [][]string) {
-	headerFmt := color.New(color.FgGreen, color.Underline).SprintfFunc()
-	columnFmt := color.New(color.FgYellow).SprintfFunc()
+// func printCountTable(data [][]string) {
+// 	headerFmt := color.New(color.FgGreen, color.Underline).SprintfFunc()
+// 	columnFmt := color.New(color.FgYellow).SprintfFunc()
 
-	tbl := table.New("Profile Type", "Active", "Inactive", "On Leave", "Terminated", "Total")
-	tbl.WithHeaderFormatter(headerFmt).WithFirstColumnFormatter(columnFmt)
+// 	tbl := table.New("Profile Type", "Active", "Inactive", "On Leave", "Terminated", "Total")
+// 	tbl.WithHeaderFormatter(headerFmt).WithFirstColumnFormatter(columnFmt)
 
-	for _, row := range data {
-		tbl.AddRow(row[0], row[1], row[2], row[3], row[4], row[5])
-	}
+// 	for _, row := range data {
+// 		tbl.AddRow(row[0], row[1], row[2], row[3], row[4], row[5])
+// 	}
 
-	tbl.Print()
-}
+// 	tbl.Print()
+// }
 
 func storeAdvancedSearchJsonFile(fileLoc string, jsonData AdvancedSearchConfigForDownload) {
 
