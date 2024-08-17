@@ -42,8 +42,8 @@ There are default settings configured in the `nerm_config.yaml` file (in the .ne
 - [ ] Advanced Searching
     - [x] See all saved Searches (list)
     - [x] Run saved search (run)
-    - [ ] Store Search via GET
-    - [ ] Create/Run Search via file (-f)
+    - [x] Store Search via GET
+    - [x] Create Search via file (-f)
     - [ ] Create Search via prompts (-c)
         - Utility for getting all stored attributes
         - Utility for getting Profile Types
