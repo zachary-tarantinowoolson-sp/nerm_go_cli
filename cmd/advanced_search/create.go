@@ -9,11 +9,11 @@ import (
 
 func newAdvancedSearchCreateCommand() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:     "run",
-		Short:   "Pulls Profiles from current environment",
-		Long:    "Pulls Profiles from current environment based on query parameters. Stores data in a CSV and JSON file at the defaul output location",
-		Example: "nerm profiles run --profile_type",
-		Aliases: []string{"g"},
+		Use:     "create",
+		Short:   "Create a new advanced search",
+		Long:    "Create and upload an advanced search. Can be done via a JSON file or via prompt (tbd)",
+		Example: "nerm advsearch create --file search.json",
+		Aliases: []string{"c"},
 		RunE: func(cmd *cobra.Command, args []string) error {
 			// params := url.Values{}
 
