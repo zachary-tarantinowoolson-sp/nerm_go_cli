@@ -21,7 +21,6 @@ func newAdvancedSearchListCommand() *cobra.Command {
 		Example: "nerm advsearch list",
 		Aliases: []string{"l"},
 		RunE: func(cmd *cobra.Command, args []string) error {
-			
 
 			limitInt := 100
 			getLimitInt := math.MaxInt32
@@ -73,6 +72,8 @@ func newAdvancedSearchListCommand() *cobra.Command {
 			return nil
 		},
 	}
+
+	cmd.Flags().StringP("file", "f", "", "Use a file to create an Advanced Search. Specify file path here") // Dumb workaround to all for create to call this command. Probably a better wayto do this..
 
 	return cmd
 }

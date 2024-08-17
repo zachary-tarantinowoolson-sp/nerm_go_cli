@@ -4,6 +4,10 @@ Copyright © 2024 Zachary Tarantino-Woolson <zachary.tarantino@sailpoint.com>
 package advanced_search
 
 import (
+	"encoding/json"
+	"fmt"
+	"nerm/cmd/utilities"
+
 	"github.com/spf13/cobra"
 )
 
@@ -15,20 +19,21 @@ func newAdvancedSearchCreateCommand() *cobra.Command {
 		Example: "nerm advsearch create --file search.json",
 		Aliases: []string{"c"},
 		RunE: func(cmd *cobra.Command, args []string) error {
-			// params := url.Values{}
+			file := cmd.Flags().Lookup("file").Value.String()
+			adv_searches := readAdvancedSearchJsonFile(file)
 
-			// var resp []byte
-			// var requestErr error
+			formatted, err := json.Marshal(adv_searches.AdvancedSearch)
+			utilities.CheckError(err)
 
-			// fileLoc := cmd.Flags().Lookup("file").Value.String()
+			json_string := "{\"advanced_search\":" + string(formatted) + "}"
 
-			// resp, requestErr = utilities.RunAdvSearchRequest(id, params.Encode())
-			// utilities.CheckError(requestErr)
+			_, requestErr := utilities.MakeAPIRequests("post", "advanced_search", "", "", []byte(json_string))
+			utilities.CheckError(requestErr)
 
-			// var advSearch_result ProfileResponse
+			fmt.Println("Advanced Search  uploaded. New List:")
 
-			// err := json.Unmarshal(resp, &advSearch_result)
-			// utilities.CheckError(err)
+			newAdvancedSearchListCommand().Execute()
+
 			return nil
 		},
 	}
