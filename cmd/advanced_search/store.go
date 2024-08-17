@@ -15,12 +15,12 @@ import (
 	"github.com/spf13/cobra"
 )
 
-func newAdvancedSearchStoreCommand() *cobra.Command {
+func newAdvancedSearchDownloadCommand() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:     "store",
-		Short:   "Store the configuration of a an Advanced Search",
-		Long:    "Store the configuration of a an Advanced Search",
-		Example: "nerm advsearch store --id 1234",
+		Use:     "download",
+		Short:   "Download the configuration of a an Advanced Search",
+		Long:    "Download the configuration of a an Advanced Search",
+		Example: "nerm advsearch download --id 1234",
 		Aliases: []string{"s"},
 		RunE: func(cmd *cobra.Command, args []string) error {
 			id := cmd.Flags().Lookup("id").Value.String()
