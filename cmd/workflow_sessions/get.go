@@ -41,6 +41,7 @@ func newSessionsGetCommand() *cobra.Command {
 			requester_id := cmd.Flags().Lookup("requester_id").Value.String()
 			limit := cmd.Flags().Lookup("limit").Value.String()
 			getLimit := cmd.Flags().Lookup("get_limit").Value.String()
+			order := cmd.Flags().Lookup("order").Value.String()
 
 			// humanReadable, humanReadableError := cmd.Flags().GetBool("human_readable")
 			// utilities.CheckError(humanReadableError)
@@ -51,6 +52,8 @@ func newSessionsGetCommand() *cobra.Command {
 				days, err = strconv.Atoi(dayString)
 				utilities.CheckError(err)
 				params.Add("order", "created_at DESC")
+			} else {
+				params.Add("order", order)
 			}
 
 			limitInt, _ := strconv.Atoi(limit)
@@ -210,6 +213,7 @@ func newSessionsGetCommand() *cobra.Command {
 	cmd.Flags().StringP("limit", "l", strconv.Itoa(configs.GetDefaultLimitParam()), "Limit for each GET request")
 	cmd.Flags().StringP("get_limit", "g", "", "Set a Get limit for how many sessions to pull back (default is All sessions)")
 	cmd.Flags().StringP("days", "d", "", "Pull sessions from the last x days")
+	cmd.Flags().StringP("order", "o", "", "Sort the returned records in a certain fashion")
 	cmd.Flags().Bool("human_readable", false, "Setting to True adds Human Readable data to sessions (Requester's Login, Profile's Name)")
 
 	return cmd
