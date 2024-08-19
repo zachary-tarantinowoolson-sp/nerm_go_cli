@@ -16,6 +16,12 @@ import (
 	"github.com/spf13/cobra"
 )
 
+type AdvancedSearchConfigForID struct {
+	AdvancedSearch struct {
+		ID string `json:"id"`
+	} `json:"advanced_search"`
+}
+
 type AdvancedSearchConfig struct {
 	AdvancedSearch []struct {
 		ID        string `json:"id"`

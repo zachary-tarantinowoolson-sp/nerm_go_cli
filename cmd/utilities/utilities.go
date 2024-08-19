@@ -194,6 +194,9 @@ func MakeAPIRequests(method string, endpoint string, req_id string, params strin
 		return resp, resp_err
 
 	case "patch":
+		resp, resp_err := MakePatchRequest(url, jsonStr)
+
+		return resp, resp_err
 
 	case "delete":
 
@@ -202,6 +205,26 @@ func MakeAPIRequests(method string, endpoint string, req_id string, params strin
 	}
 
 	return nil, nil
+}
+
+func MakePatchRequest(url string, jsonStr []byte) ([]byte, error) {
+	req, err := http.NewRequest(http.MethodPatch, url, bytes.NewBuffer(jsonStr))
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	req.Header.Add("Authorization", configs.GetAPIToken())
+	req.Header.Add("Content-Type", "application/json")
+	req.Header.Add("Accept", "application/json")
+
+	resp, err := http.DefaultClient.Do(req)
+	CheckError(err)
+
+	respBody, err := io.ReadAll(resp.Body)
+	CheckError(err)
+	defer resp.Body.Close()
+
+	return respBody, nil
 }
 
 func MakePostRequest(url string, jsonStr []byte) ([]byte, error) {

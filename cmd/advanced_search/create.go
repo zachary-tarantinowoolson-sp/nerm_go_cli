@@ -9,6 +9,8 @@ import (
 	"fmt"
 	"nerm/cmd/utilities"
 	"os"
+	"strconv"
+	"strings"
 
 	"github.com/spf13/cobra"
 )
@@ -40,6 +42,9 @@ func newAdvancedSearchCreateCommand() *cobra.Command {
 				newAdvancedSearchListCommand().Execute()
 
 			} else if prompt != "" {
+
+				var adv_search AdvancedSearchConfigForID
+
 				advancedSearchLabel := prompt
 
 				types_resp, types_err := utilities.MakeAPIRequests("get", "profile_types", "", "", nil)
@@ -50,26 +55,66 @@ func newAdvancedSearchCreateCommand() *cobra.Command {
 				utilities.CheckError(unmarshalErr)
 
 				r := bufio.NewReader(os.Stdin)
+
+				firstLoop := true
+
+			outer:
 				for {
 					fmt.Fprint(os.Stderr, "What type of Condition Rule do you want to add to the '"+advancedSearchLabel+"' Advanced Searh?:\n1.Profile Type\n2.Profile Status\n3.Profile Attribute\n4.Risk\n5.Exit\n>")
 					conditionRule, readErr := r.ReadString('\n')
-					fmt.Println(conditionRule)
 					utilities.CheckError(readErr)
+
+					conditionRule = strings.TrimSpace(conditionRule)
+
+					var json_string string
 
 					switch conditionRule {
 					case "1", "Profile Type", "profile type", "type":
-						for _, rec := range result.ProfileTypes {
-							fmt.Println(rec)
+						fmt.Println("in 1")
+						for index, rec := range result.ProfileTypes {
+							fmt.Println(index+1, ". ", rec.Name)
 						}
 
+						fmt.Println("What Profile Type to add as a Condition Rule? (enter the number)")
+						readType := bufio.NewReader(os.Stdin)
+						profType, readErr := readType.ReadString('\n')
+						utilities.CheckError(readErr)
+						profType = strings.TrimSpace(profType)
+						i, err := strconv.Atoi(profType)
+						utilities.CheckError(err)
+
+						fmt.Println(result.ProfileTypes[i-1])
+
+						json_string = "{\"advanced_search\": {\"condition_rules_attributes\": [{\"type\":\"ProfileTypeRule\",\"comparison_operator\":\"==\",\"value\":\"" + result.ProfileTypes[i-1].ID + "\"}]}}"
+
 					case "2", "Profile Status", "profile status", "status":
+						fmt.Println("in 2")
 
 					case "3", "Profile Attribute", "profile attribute", "attribute":
+						fmt.Println("in 3")
 
 					case "4", "Risk", "risk":
+						fmt.Println("in 4")
 
 					case "5", "Exit", "exit", "Quit", "quit", "e", "q":
+						fmt.Println("in 5")
+						break outer
 					}
+
+					// if not first loop, make: {"advanced_search": {"label": "No operation test"}}
+
+					if firstLoop {
+						resp, requestErr := utilities.MakeAPIRequests("post", "advanced_search", "", "", []byte("{\"advanced_search\": {\"label\": \""+advancedSearchLabel+"\"}}"))
+						utilities.CheckError(requestErr)
+
+						unmarshalErr = json.Unmarshal(resp, &adv_search)
+						utilities.CheckError(unmarshalErr)
+
+					}
+					_, requestErr := utilities.MakeAPIRequests("patch", "advanced_search/"+adv_search.AdvancedSearch.ID, "", "", []byte(json_string))
+					utilities.CheckError(requestErr)
+
+					json_string = "" // reset string
 
 				}
 
