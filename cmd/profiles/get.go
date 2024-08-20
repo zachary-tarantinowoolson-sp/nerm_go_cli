@@ -34,6 +34,9 @@ func newProfileGetCommand() *cobra.Command {
 			limit := cmd.Flags().Lookup("limit").Value.String()
 			getLimit := cmd.Flags().Lookup("get_limit").Value.String()
 
+			after_id, after_idErr := cmd.Flags().GetBool("after_id")
+			utilities.CheckError(after_idErr)
+
 			limitInt, _ := strconv.Atoi(limit)
 
 			var getLimitInt int
@@ -77,6 +80,9 @@ func newProfileGetCommand() *cobra.Command {
 			} else {
 				params.Add("limit", limit)
 			}
+			if after_id {
+				params.Add("after_id", "")
+			}
 
 			// make first call to get the total number of profiles to be returned
 			resp, requestErr = utilities.MakeAPIRequests("get", "profiles", id, params.Encode(), nil)
@@ -102,7 +108,9 @@ func newProfileGetCommand() *cobra.Command {
 
 			for offset := 0; offset < getLimitInt; offset = offset + limitInt {
 
-				params.Add("offset", strconv.Itoa(offset))
+				if !after_id {
+					params.Add("offset", strconv.Itoa(offset))
+				}
 
 				resp, requestErr = utilities.MakeAPIRequests("get", "profiles", id, params.Encode(), nil)
 
@@ -128,6 +136,16 @@ func newProfileGetCommand() *cobra.Command {
 					bar.Add(limitInt) // increment progress
 				}
 
+				if after_id {
+					if respMetaData.Metadata.AfterID == "null" || respMetaData.Metadata.AfterID == "" { // incase the metadata is broken, just use the last id
+						e, eErr := strconv.Atoi(limit)
+						utilities.CheckError(eErr)
+						params.Add("after_id", profile_result.Profiles[e-1].ID)
+					} else {
+						params.Add("after_id", respMetaData.Metadata.AfterID) // use the metadata value when possible
+					}
+				}
+
 				printJsonToFile(outputLoc+".json", profile_result, lastLoop)
 			}
 
@@ -151,6 +169,7 @@ func newProfileGetCommand() *cobra.Command {
 	cmd.Flags().StringP("force_backend", "b", "", "Force the Profile Service or Identity Suite controllers")
 	cmd.Flags().StringP("limit", "l", strconv.Itoa(configs.GetDefaultLimitParam()), "Limit for each GET request")
 	cmd.Flags().StringP("get_limit", "g", "", "Set a Get limit for how many profiles to pull back (default is All profiles)")
+	cmd.Flags().BoolP("after_id", "a", false, "Get all Profiles using the after_id pagination")
 
 	return cmd
 }
