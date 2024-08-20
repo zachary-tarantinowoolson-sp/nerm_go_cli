@@ -158,7 +158,7 @@ type NeAttribute struct {
 		CreatedAt               string `json:"created_at"`
 		UpdatedAt               string `json:"updated_at"`
 		ArchivedOn              string `json:"archived_on"`
-		LegacyID                string `json:"legacy_id"`
+		LegacyID                int    `json:"legacy_id"`
 	} `json:"ne_attribute"`
 }
 
