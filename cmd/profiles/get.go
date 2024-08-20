@@ -137,7 +137,13 @@ func newProfileGetCommand() *cobra.Command {
 				}
 
 				if after_id {
-					params.Add("after_id", respMetaData.Metadata.AfterID)
+					if respMetaData.Metadata.AfterID == "null" || respMetaData.Metadata.AfterID == "" { // incase the metadata is broken, just use the last id
+						e, eErr := strconv.Atoi(limit)
+						utilities.CheckError(eErr)
+						params.Add("after_id", profile_result.Profiles[e-1].ID)
+					} else {
+						params.Add("after_id", respMetaData.Metadata.AfterID) // use the metadata value when possible
+					}
 				}
 
 				printJsonToFile(outputLoc+".json", profile_result, lastLoop)
