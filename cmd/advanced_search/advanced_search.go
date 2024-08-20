@@ -100,6 +100,15 @@ type ProfileJsonFileData struct {
 	Attributes       map[string]string `json:"attributes"`
 }
 
+type ProfileTypeResponse struct {
+	ProfileTypes []struct {
+		Name     string `json:"name"`
+		ID       string `json:"id"`
+		UID      string `json:"uid"`
+		Category string `json:"category"`
+	} `json:"profile_types"`
+}
+
 type ResponseMetaData struct {
 	Metadata struct {
 		Limit  int    `json:"limit"`
