@@ -53,10 +53,11 @@ type ProfileJsonFileData struct {
 
 type ResponseMetaData struct {
 	Metadata struct {
-		Limit  int    `json:"limit"`
-		Offset int    `json:"offset"`
-		Total  int    `json:"total"`
-		Next   string `json:"next"`
+		Limit   int    `json:"limit"`
+		Offset  int    `json:"offset"`
+		Total   int    `json:"total"`
+		Next    string `json:"next"`
+		AfterID string `json:"after_id"`
 	} `json:"_metadata"`
 }
 
