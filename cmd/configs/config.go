@@ -125,3 +125,7 @@ func GetDefaultLimitParam() int {
 func GetAllEnvironments() map[string]interface{} {
 	return viper.GetStringMap("ALL_ENVIRONMENTS")
 }
+
+func GetAllEnvironmentStrings() map[string]string {
+	return viper.GetStringMapString("ALL_ENVIRONMENTS")
+}
