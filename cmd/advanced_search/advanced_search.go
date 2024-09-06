@@ -185,7 +185,7 @@ func NewAdvancedSearchCommand() *cobra.Command {
 	return cmd
 }
 
-func printAdvSearchListTable(data [][]string) {
+func printAdvSearchListTable(data []string) {
 	headerFmt := color.New(color.FgGreen, color.Underline).SprintfFunc()
 	columnFmt := color.New(color.FgYellow).SprintfFunc()
 
@@ -193,7 +193,8 @@ func printAdvSearchListTable(data [][]string) {
 	tbl.WithHeaderFormatter(headerFmt).WithFirstColumnFormatter(columnFmt)
 
 	for _, row := range data {
-		tbl.AddRow(row[0], row[1])
+		stringSlice := strings.Split(row, "|")
+		tbl.AddRow(stringSlice[0], stringSlice[1])
 	}
 
 	tbl.Print()

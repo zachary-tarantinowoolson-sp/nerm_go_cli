@@ -8,6 +8,7 @@ import (
 	"math"
 	"nerm/cmd/utilities"
 	"net/url"
+	"slices"
 	"strconv"
 
 	"github.com/spf13/cobra"
@@ -28,7 +29,7 @@ func newAdvancedSearchListCommand() *cobra.Command {
 			var resp []byte
 			var requestErr error
 			var respMetaData ResponseMetaData
-			var finalAdvSearches [][]string
+			var finalAdvSearches []string
 
 			params := url.Values{}
 			params.Add("metadata", "true") //  include metadata for limit/offsets
@@ -56,17 +57,16 @@ func newAdvancedSearchListCommand() *cobra.Command {
 
 				err = json.Unmarshal(resp, &adv_searches)
 				utilities.CheckError(err)
-				err = json.Unmarshal(resp, &respMetaData)
-				utilities.CheckError(err)
 
 				for _, rec := range adv_searches.AdvancedSearch {
-					var row []string
-					row = append(row, rec.Label)
-					row = append(row, rec.ID)
-					finalAdvSearches = append(finalAdvSearches, row)
+					// var row []string
+					// row = append(row, rec.Label)
+					// row = append(row, rec.ID)
+					finalAdvSearches = append(finalAdvSearches, rec.Label+"|"+rec.ID)
 				}
 
 			}
+			slices.Sort(finalAdvSearches)
 			printAdvSearchListTable(finalAdvSearches)
 
 			return nil
