@@ -164,8 +164,10 @@ func newAdvancedSearchCreateCommand() *cobra.Command {
 									utilities.CheckError(readErr)
 									compareValue = strings.TrimSpace(compareValue)
 
-									// try to parse for a date, used in a later check
-									_, timeErr := time.Parse("01/02/2006", compareValue)
+									if compareValue != "Today" && compareValue != "today" && compareValue != "attribute" && compareValue != "Attribute" && compareValue != "date" && compareValue != "Dttribute" {
+										fmt.Println("Please enter 'attribute', 'Today', or 'date'")
+										continue
+									}
 
 									if compareValue == "attribute" {
 										for {
@@ -190,27 +192,129 @@ func newAdvancedSearchCreateCommand() *cobra.Command {
 										json_string = "{\"advanced_search\": {\"condition_rules_attributes\": [{\"type\": \"ProfileAttributeRule\",\"condition_object_type\": \"DateAttribute\",\"condition_object_id\": \"" + attributeId + "\",\"comparison_operator\": \"" + compareOperator + "\",\"value\": \"Today\"}]}}"
 
 										break
-									} else if timeErr != nil {
-										fmt.Println("Please enter attribute, 'Today', or a valid date string")
-									} else { // must be a date value
+									} else if compareValue == "date" { // must be a date value
+										// try to parse for a date, used in a later check
+										_, timeErr := time.Parse("01/02/2006", compareValue)
+										utilities.CheckError(timeErr)
+										if timeErr != nil {
+											fmt.Println("Please enter attribute, 'Today', or a valid date string")
+										}
 										json_string = "{\"advanced_search\": {\"condition_rules_attributes\": [{\"type\": \"ProfileAttributeRule\",\"condition_object_type\": \"DateAttribute\",\"condition_object_id\": \"" + attributeId + "\",\"comparison_operator\": \"" + compareOperator + "\",\"value\": \"" + compareValue + "\"}]}}"
 										break
 									}
-
 								}
-
 							}
 
-							// fmt.Println("What value do you want to look for with " + attribute.NeAttribute.Label + "?: ")
-							// readValue := bufio.NewReader(os.Stdin)
-							// attributeValue, readErr := readValue.ReadString('\n')
-							// utilities.CheckError(readErr)
-							// attributeValue = strings.TrimSpace(attributeValue)
+							if compareOperator == ">" || compareOperator == "<" || compareOperator == "==" {
+							compareLoop2:
+								for {
+									fmt.Println("Do you want to compare against 'Today', a date, or another attribute? (enter 'attribute' to compare against another attribute)")
+									readValue := bufio.NewReader(os.Stdin)
+									compareValue, readErr := readValue.ReadString('\n')
+									utilities.CheckError(readErr)
+									compareValue = strings.TrimSpace(compareValue)
 
-							// fmt.Println(compareOperator, attributeValue)
+									if compareValue != "Today" && compareValue != "today" && compareValue != "attribute" && compareValue != "Attribute" && compareValue != "date" && compareValue != "Dttribute" {
+										fmt.Println("Please enter 'attribute', 'Today', or 'date'")
+										continue
+									}
 
-						case "ProfileSelectAttribute":
+									if compareValue == "date" {
+										for {
+											fmt.Println("Please enter a date in mm/dd/yyyy format:")
+											readdateValue := bufio.NewReader(os.Stdin)
+											dateValue, readErr := readdateValue.ReadString('\n')
+											utilities.CheckError(readErr)
+											dateValue = strings.TrimSpace(dateValue)
 
+											_, timeErr := time.Parse("01/02/2006", dateValue)
+											utilities.CheckError(timeErr)
+
+											if timeErr != nil {
+												fmt.Println("Please enter a valid date.")
+											} else {
+												compareValue = dateValue
+												break
+											}
+										}
+									}
+
+									if compareValue == "attribute" {
+										for {
+											fmt.Println("Enter the Attribute ID for the attribute you want to compare " + attribute.NeAttribute.Label + " with:")
+											readAttributeIdValue := bufio.NewReader(os.Stdin)
+											attrIDValue, readErr := readAttributeIdValue.ReadString('\n')
+											utilities.CheckError(readErr)
+											attrIDValue = strings.TrimSpace(attrIDValue)
+
+											attrResp, attrErr := utilities.MakeAPIRequests("get", "ne_attributes/"+attrIDValue, "", "", nil)
+											utilities.CheckError(attrErr)
+											var secondaryAttribute NeAttribute
+											unmarshalErr := json.Unmarshal(attrResp, &secondaryAttribute)
+											utilities.CheckError(unmarshalErr)
+
+											if attrErr != nil { // if there is an error
+												fmt.Println("There was an issue with that attribute. Please enter a valid attribute ID.\n\n", attrResp)
+											} else {
+												fmt.Println("Do you want to check for a number of days 'before' or 'after' " + secondaryAttribute.NeAttribute.Label + "?")
+												readBeforeOrAfterValue := bufio.NewReader(os.Stdin)
+												compareBeforeOrAfterValue, readErr := readBeforeOrAfterValue.ReadString('\n')
+												utilities.CheckError(readErr)
+												compareBeforeOrAfterValue = strings.TrimSpace(compareBeforeOrAfterValue)
+
+												fmt.Println("How many days " + compareBeforeOrAfterValue + " " + secondaryAttribute.NeAttribute.Label + " do you want to look for?")
+												readNumDaysValue := bufio.NewReader(os.Stdin)
+												numDays, readErr := readNumDaysValue.ReadString('\n')
+												utilities.CheckError(readErr)
+
+												if compareBeforeOrAfterValue == "before" || compareBeforeOrAfterValue == "after" {
+													json_string = "{\"advanced_search\": {\"condition_rules_attributes\": [{\"type\": \"ProfileAttributeRule\",\"condition_object_type\": \"DateAttribute\",\"condition_object_id\": \"" + attributeId + "\",\"secondary_attribute_type\":\"DateAttribute\",\"secondary_attribute_id\":\"" + attrIDValue + "\",\"comparison_operator\": \"" + compareOperator + "\",\"value\": \"" + compareValue + "\",\"secondary_value\":\"" + compareBeforeOrAfterValue + "\",\"tertiary_value\":" + numDays + "}]}}"
+												} else {
+													fmt.Println("Please enter before/after and a valid number of days")
+												}
+												break compareLoop2
+											}
+										}
+									} else {
+
+										fmt.Println("Do you want to check for a number of days 'before' or 'after' " + compareValue + "?")
+										readBeforeOrAfterValue := bufio.NewReader(os.Stdin)
+										compareBeforeOrAfterValue, readErr := readBeforeOrAfterValue.ReadString('\n')
+										utilities.CheckError(readErr)
+										compareBeforeOrAfterValue = strings.TrimSpace(compareBeforeOrAfterValue)
+
+										fmt.Println("How many days " + compareBeforeOrAfterValue + " " + compareValue + " do you want to look for?")
+										readNumDaysValue := bufio.NewReader(os.Stdin)
+										numDays, readErr := readNumDaysValue.ReadString('\n')
+										utilities.CheckError(readErr)
+
+										if compareBeforeOrAfterValue == "before" || compareBeforeOrAfterValue == "after" {
+											json_string = "{\"advanced_search\": {\"condition_rules_attributes\": [{\"type\": \"ProfileAttributeRule\",\"condition_object_type\": \"DateAttribute\",\"condition_object_id\": \"" + attributeId + "\",\"comparison_operator\": \"" + compareOperator + "\",\"value\": \"" + compareValue + "\",\"secondary_value\":\"" + compareBeforeOrAfterValue + "\",\"tertiary_value\":" + numDays + "}]}}"
+											break compareLoop2
+										} else {
+											fmt.Println("Please enter before/after and a valid number of days")
+										}
+									}
+								}
+							}
+						case "ProfileSelectAttribute", "ProfileSearchAttribute", "OwnerSelectAttribute", "OwnerSearchAttribute", "ContributorSelectAttribute", "ContributorSearchAttribute":
+							fmt.Println("What kind of comparsion do you want to make for the " + attribute.NeAttribute.Label + " value? (include?, exclude?): ")
+							readCompare := bufio.NewReader(os.Stdin)
+							compareOperator, readErr := readCompare.ReadString('\n')
+							utilities.CheckError(readErr)
+							compareOperator = strings.TrimSpace(compareOperator)
+
+							if compareOperator != "include?" && compareOperator != "exclude?" {
+								fmt.Println(compareOperator, "is not a valid Comparison Operator. Please enter include? or exclude?")
+							} else {
+								fmt.Println("What value do you want to look for with " + attribute.NeAttribute.Label + "? (enter the ID of the Profile / User)")
+								readValue := bufio.NewReader(os.Stdin)
+								attributeValue, readErr := readValue.ReadString('\n')
+								utilities.CheckError(readErr)
+								attributeValue = strings.TrimSpace(attributeValue)
+
+								json_string = "{\"advanced_search\": {\"condition_rules_attributes\": [{\"type\": \"ProfileAttributeRule\",\"condition_object_type\": \"" + attribute.NeAttribute.Type + "\",\"condition_object_id\": \"" + attributeId + "\",\"comparison_operator\": \"" + compareOperator + "\",\"value\": \"" + attributeValue + "\"}]}}"
+							}
 						}
 
 					case "4", "Risk", "risk":
@@ -232,8 +336,6 @@ func newAdvancedSearchCreateCommand() *cobra.Command {
 						break outer
 					}
 
-					// if not first loop, make: {"advanced_search": {"label": "No operation test"}}
-
 					if firstLoop {
 						resp, requestErr := utilities.MakeAPIRequests("post", "advanced_search", "", "", []byte("{\"advanced_search\": {\"label\": \""+advancedSearchLabel+"\"}}"))
 						utilities.CheckError(requestErr)
@@ -242,45 +344,19 @@ func newAdvancedSearchCreateCommand() *cobra.Command {
 						utilities.CheckError(unmarshalErr)
 
 						firstLoop = false
-
+						json_string = "" // reset string
 					}
 					_, requestErr := utilities.MakeAPIRequests("patch", "advanced_search/"+adv_search.AdvancedSearch.ID, "", "", []byte(json_string))
 					utilities.CheckError(requestErr)
-
-					formatted, err := json.MarshalIndent(json_string, "", "  ")
-					utilities.CheckError(err)
-					fmt.Println(string(formatted))
-
-					fmt.Println(adv_search.AdvancedSearch.ID)
-
 					json_string = "" // reset string
 
 				}
 
+				fmt.Println("The ID of your new " + advancedSearchLabel + " search is: " + adv_search.AdvancedSearch.ID)
+
 			} else {
 				fmt.Println("Please provide at least one of the flags.")
 			}
-
-			// Available Rules
-			// date TODO: > < == uses the 3 value keys
-			//   {
-			// 	"type": "ProfileAttributeRule",
-			// 	"condition_object_type": "DateAttribute",
-			// 	"condition_object_id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
-			// 	"secondary_attribute_type": "DateAttribute",
-			// 	"secondary_attribute_id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
-			// 	"comparison_operator": ">",
-			// 	"value": "Today",
-			// 	"secondary_value": "after",
-			// 	"tertiary_value": 30
-			//   },
-			//   {
-			// 	"type": "ProfileAttributeRule",
-			// 	"condition_object_type": "ProfileSelectAttribute",
-			// 	"condition_object_id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
-			// 	"comparison_operator": "include?",
-			// 	"value": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
-			//   },
 
 			return nil
 		},

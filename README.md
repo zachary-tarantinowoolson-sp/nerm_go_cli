@@ -48,5 +48,5 @@ There are default settings configured in the `nerm_config.yaml` file (in the .ne
 - [x] Workflow Session searching and reporting
     - pull last x days of failed workflows 
     - [ ] fix progress bar reporting numbers to not just be the get max if using -d
-- [ ] Input error checking (number of profile type, env, etc is within range)
+- [ ] Better input error checking (number of profile type, env, etc is within range)
 - [ ] Job status table for mass profile change / import
