@@ -76,6 +76,7 @@ func NewProfilesCommand() *cobra.Command {
 	cmd.AddCommand(
 		newProfileCountCommand(),
 		newProfileGetCommand(),
+		newProfileDiffCommand(),
 	)
 
 	return cmd
@@ -90,6 +91,20 @@ func printCountTable(data [][]string) {
 
 	for _, row := range data {
 		tbl.AddRow(row[0], row[1], row[2], row[3], row[4], row[5])
+	}
+
+	tbl.Print()
+}
+
+func printDiffTable(data [][]string) {
+	headerFmt := color.New(color.FgGreen, color.Underline).SprintfFunc()
+	columnFmt := color.New(color.FgYellow).SprintfFunc()
+
+	tbl := table.New("Tenant", "Backend", "Total")
+	tbl.WithHeaderFormatter(headerFmt).WithFirstColumnFormatter(columnFmt)
+
+	for _, row := range data {
+		tbl.AddRow(row[0], row[1], row[2])
 	}
 
 	tbl.Print()

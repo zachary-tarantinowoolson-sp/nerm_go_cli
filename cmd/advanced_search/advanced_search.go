@@ -16,6 +16,12 @@ import (
 	"github.com/spf13/cobra"
 )
 
+type AdvancedSearchConfigForID struct {
+	AdvancedSearch struct {
+		ID string `json:"id"`
+	} `json:"advanced_search"`
+}
+
 type AdvancedSearchConfig struct {
 	AdvancedSearch []struct {
 		ID        string `json:"id"`
@@ -116,6 +122,44 @@ type ResponseMetaData struct {
 		Total  int    `json:"total"`
 		Next   string `json:"next"`
 	} `json:"_metadata"`
+}
+
+type RiskLevel struct {
+	RiskLevels []struct {
+		ID     string  `json:"id"`
+		UID    string  `json:"uid"`
+		Label  string  `json:"label"`
+		Points float64 `json:"points"`
+		Order  int     `json:"order"`
+	} `json:"risk_levels"`
+}
+
+type NeAttribute struct {
+	NeAttribute struct {
+		ID                      string `json:"id"`
+		UID                     string `json:"uid"`
+		Label                   string `json:"label"`
+		ToolTip                 string `json:"tool_tip"`
+		DataType                string `json:"data_type"`
+		ProfileTypeID           string `json:"profile_type_id"`
+		DateFormat              string `json:"date_format"`
+		Description             string `json:"description"`
+		Archived                bool   `json:"archived"`
+		Type                    string `json:"type"`
+		OwnershipDriven         bool   `json:"ownership_driven"`
+		AllowMultipleSelections bool   `json:"allow_multiple_selections"`
+		SelectableStatus        string `json:"selectable_status"`
+		FilteredByNeAttribute   bool   `json:"filtered_by_ne_attribute"`
+		FilteringNeAttributeID  string `json:"filtering_ne_attribute_id"`
+		NeAttributeFilterID     string `json:"ne_attribute_filter_id"`
+		RiskType                string `json:"risk_type"`
+		Crypt                   bool   `json:"crypt"`
+		RiskScoreSetting        string `json:"risk_score_setting"`
+		CreatedAt               string `json:"created_at"`
+		UpdatedAt               string `json:"updated_at"`
+		ArchivedOn              string `json:"archived_on"`
+		LegacyID                int    `json:"legacy_id"`
+	} `json:"ne_attribute"`
 }
 
 func NewAdvancedSearchCommand() *cobra.Command {
