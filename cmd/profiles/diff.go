@@ -9,6 +9,7 @@ import (
 	"nerm/cmd/configs"
 	"nerm/cmd/utilities"
 	"net/url"
+	"sort"
 	"strconv"
 
 	"github.com/schollz/progressbar/v3"
@@ -36,6 +37,7 @@ func newProfileDiffCommand() *cobra.Command {
 				allEnvironmentNames := configs.GetAllEnvironmentStrings()
 
 				keys := maps.Keys(allEnvironmentNames)
+				sort.Strings(keys)
 
 				for _, e := range keys {
 					configs.SetCurrentEnvironment(e)

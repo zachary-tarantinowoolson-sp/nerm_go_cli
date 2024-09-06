@@ -262,6 +262,7 @@ func newAdvancedSearchCreateCommand() *cobra.Command {
 			}
 
 			// Available Rules
+			// date TODO: > < == uses the 3 value keys
 			//   {
 			// 	"type": "ProfileAttributeRule",
 			// 	"condition_object_type": "DateAttribute",

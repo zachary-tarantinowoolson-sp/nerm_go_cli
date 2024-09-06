@@ -25,20 +25,6 @@ There are default settings configured in the `nerm_config.yaml` file (in the .ne
 
 
 #### ToDo
-- [x] Build environment manager
-    - [x] Create
-    - [x] Show
-    - [x] Update
-    - [x] Delete
-    - [x] Update
-    - [x] List all
-- [x] Health Check
-- [x] Pulling profiles into a report
-    - Allow query parameters 
-    - Print to a file / json to csv
-- [x] Basic Profile Counts
-    - Show Profile counts based on status and for each profile type
-    - Table display
 - [ ] Advanced Searching
     - [x] See all saved Searches (list)
     - [x] Run saved search (run)
@@ -59,9 +45,6 @@ There are default settings configured in the `nerm_config.yaml` file (in the .ne
     - Get records
     - Delete records
     - Importer
-- [x] ID Proofing reporting
-    - Generate a Report of records
-    - Get simple count of all pass/fail results
 - [x] Workflow Session searching and reporting
     - pull last x days of failed workflows 
     - [ ] fix progress bar reporting numbers to not just be the get max if using -d
