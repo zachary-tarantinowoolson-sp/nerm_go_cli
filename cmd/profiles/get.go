@@ -10,6 +10,7 @@ import (
 	"nerm/cmd/configs"
 	"nerm/cmd/utilities"
 	"net/url"
+	"reflect"
 	"strconv"
 	"time"
 
@@ -33,9 +34,8 @@ func newProfileGetCommand() *cobra.Command {
 			force_backend := cmd.Flags().Lookup("force_backend").Value.String()
 			limit := cmd.Flags().Lookup("limit").Value.String()
 			getLimit := cmd.Flags().Lookup("get_limit").Value.String()
-
-			after_id, after_idErr := cmd.Flags().GetBool("after_id")
-			utilities.CheckError(after_idErr)
+			after_id := cmd.Flags().Lookup("after_id").Value.String()
+			isafterIdSet := cmd.Flags().Lookup("after_id").Changed
 
 			limitInt, _ := strconv.Atoi(limit)
 
@@ -80,8 +80,8 @@ func newProfileGetCommand() *cobra.Command {
 			} else {
 				params.Add("limit", limit)
 			}
-			if after_id {
-				params.Add("after_id", "")
+			if isafterIdSet {
+				params.Add("after_id", after_id)
 			}
 
 			// make first call to get the total number of profiles to be returned
@@ -108,7 +108,7 @@ func newProfileGetCommand() *cobra.Command {
 
 			for offset := 0; offset < getLimitInt; offset = offset + limitInt {
 
-				if !after_id {
+				if !isafterIdSet {
 					params.Add("offset", strconv.Itoa(offset))
 				}
 
@@ -117,6 +117,7 @@ func newProfileGetCommand() *cobra.Command {
 				utilities.CheckError(requestErr)
 
 				var profile_result ProfileResponse
+				// var profileResultZero ProfileResponse
 				var respMetaData ResponseMetaData
 
 				err := json.Unmarshal(resp, &profile_result)
@@ -124,6 +125,11 @@ func newProfileGetCommand() *cobra.Command {
 
 				err = json.Unmarshal(resp, &respMetaData)
 				utilities.CheckError(err)
+
+				if reflect.DeepEqual(profile_result, ProfileResponse{}) {
+					fmt.Println("\n\nNo more Profiles found!")
+					break
+				}
 
 				if (offset + limitInt) >= getLimitInt {
 					bar.Set(getLimitInt)
@@ -136,7 +142,7 @@ func newProfileGetCommand() *cobra.Command {
 					bar.Add(limitInt) // increment progress
 				}
 
-				if after_id {
+				if isafterIdSet {
 					if respMetaData.Metadata.AfterID == "null" || respMetaData.Metadata.AfterID == "" { // incase the metadata is broken, just use the last id
 						e, eErr := strconv.Atoi(limit)
 						utilities.CheckError(eErr)
@@ -169,7 +175,7 @@ func newProfileGetCommand() *cobra.Command {
 	cmd.Flags().StringP("force_backend", "b", "", "Force the Profile Service or Identity Suite controllers")
 	cmd.Flags().StringP("limit", "l", strconv.Itoa(configs.GetDefaultLimitParam()), "Limit for each GET request")
 	cmd.Flags().StringP("get_limit", "g", "", "Set a Get limit for how many profiles to pull back (default is All profiles)")
-	cmd.Flags().BoolP("after_id", "a", false, "Get all Profiles using the after_id pagination")
+	cmd.Flags().String("after_id", "", "Get all Profiles using the after_id pagination. Leave blank or add a value to start from")
 
 	return cmd
 }
