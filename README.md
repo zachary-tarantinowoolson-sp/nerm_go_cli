@@ -18,6 +18,10 @@ In a terminal, type `nerm -h` to see the available commands. Example:
 Use `nerm env` to CRUD environments in order to make use of the other commands (the nerm_config.yaml files gets created in the .nerm folder of your User directory)
 User `nerm profiles get` with optional flags to pull a JSON and CSV report of Profile dat from a tenant
 
+AFTER ID usage
+to get all profiles: nerm profiles get --after_id=""
+to get profiles after a certain page : nerm profiles get --after_id profile_id
+
 ### Configuration
 There are default settings configured in the `nerm_config.yaml` file (in the .nerm folder of your User directory). These are:
 - default_output_location : Currently set to `default_output_location` . This is where files generate by this CLI tool will be sent to.
@@ -25,16 +29,6 @@ There are default settings configured in the `nerm_config.yaml` file (in the .ne
 
 
 #### ToDo
-- [ ] Advanced Searching
-    - [x] See all saved Searches (list)
-    - [x] Run saved search (run)
-    - [x] Store Search via GET
-    - [x] Create Search via file (-f)
-    - [ ] Create Search via prompts (-c)
-        - Utility for getting all stored attributes
-        - Utility for getting Profile Types
-        - Creating a search both saves it to the app and stores the id / name to yaml
-        - use {{ }} syntax with csv header val as a way to use variables?
 - [ ] Updating profiles
     - [ ] using JSON from a File
     - [ ] using prompts or flags for what attributes / values to set
@@ -50,3 +44,4 @@ There are default settings configured in the `nerm_config.yaml` file (in the .ne
     - [ ] fix progress bar reporting numbers to not just be the get max if using -d
 - [ ] Better input error checking (number of profile type, env, etc is within range)
 - [ ] Job status table for mass profile change / import
+- [ ] Change Yaml to https://github.com/zalando/go-keyring
