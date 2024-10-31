@@ -25,6 +25,13 @@ func newProfileGetCommand() *cobra.Command {
 		Long:    "Pulls Profiles from current environment based on query parameters. Stores data in a CSV and JSON file at the defaul output location",
 		Example: "nerm profiles get --profile_type",
 		Aliases: []string{"g"},
+		PreRun: func(cmd *cobra.Command, args []string) {
+			isafterIdSet := cmd.Flags().Lookup("after_id").Changed
+			if isafterIdSet {
+				cmd.MarkFlagRequired("keep_archived")
+			}
+
+		},
 		RunE: func(cmd *cobra.Command, args []string) error {
 			id := cmd.Flags().Lookup("id").Value.String()
 			exclude := cmd.Flags().Lookup("exclude").Value.String()
@@ -36,6 +43,7 @@ func newProfileGetCommand() *cobra.Command {
 			getLimit := cmd.Flags().Lookup("get_limit").Value.String()
 			after_id := cmd.Flags().Lookup("after_id").Value.String()
 			isafterIdSet := cmd.Flags().Lookup("after_id").Changed
+			keep_archived, _ := cmd.Flags().GetBool("keep_archived")
 
 			limitInt, _ := strconv.Atoi(limit)
 
@@ -77,8 +85,8 @@ func newProfileGetCommand() *cobra.Command {
 				fmt.Println("Limit can not be over 500")
 				limit = "500"
 				params.Add("limit", "500")
-			} else {
-				params.Add("limit", limit)
+			} else if limitInt > getLimitInt {
+				params.Add("limit", getLimit)
 			}
 			if isafterIdSet {
 				params.Add("after_id", after_id)
@@ -117,6 +125,18 @@ func newProfileGetCommand() *cobra.Command {
 				utilities.CheckError(requestErr)
 
 				var profile_result ProfileResponse
+				var profile_filtered_result []struct {
+					ID               string            `json:"id"`
+					UID              string            `json:"uid"`
+					Name             string            `json:"name"`
+					ProfileTypeID    string            `json:"profile_type_id"`
+					Status           string            `json:"status"`
+					IDProofingStatus string            `json:"id_proofing_status"`
+					Archived         bool              `json:"archived"`
+					UpdatedAt        string            `json:"updated_at"`
+					CreatedAt        string            `json:"created_at"`
+					Attributes       map[string]string `json:"attributes"`
+				}
 				// var profileResultZero ProfileResponse
 				var respMetaData ResponseMetaData
 
@@ -130,6 +150,17 @@ func newProfileGetCommand() *cobra.Command {
 					fmt.Println("\n\nNo more Profiles found!")
 					break
 				}
+
+				// Use a loop to check for and only store Archived or Non-Archived proifles (depending on the flag set)
+				// If both the record and the flag are true or both are false - store the profile
+				for _, rec := range profile_result.Profiles {
+					if rec.Archived && keep_archived {
+						profile_filtered_result = append(profile_filtered_result, rec)
+					} else if !rec.Archived && !keep_archived {
+						profile_filtered_result = append(profile_filtered_result, rec)
+					}
+				}
+				profile_result.Profiles = profile_filtered_result
 
 				if (offset + limitInt) >= getLimitInt {
 					bar.Set(getLimitInt)
@@ -176,6 +207,7 @@ func newProfileGetCommand() *cobra.Command {
 	cmd.Flags().StringP("limit", "l", strconv.Itoa(configs.GetDefaultLimitParam()), "Limit for each GET request")
 	cmd.Flags().StringP("get_limit", "g", "", "Set a Get limit for how many profiles to pull back (default is All profiles)")
 	cmd.Flags().String("after_id", "", "Get all Profiles using the after_id pagination. Leave blank or add a value to start from")
+	cmd.Flags().Bool("keep_archived", false, "When using after_id pagination, determin if you want to store records that are archived or not. Requried if using after_id")
 
 	return cmd
 }

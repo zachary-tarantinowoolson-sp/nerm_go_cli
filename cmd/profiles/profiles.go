@@ -33,6 +33,7 @@ type ProfileResponse struct {
 		ProfileTypeID    string            `json:"profile_type_id"`
 		Status           string            `json:"status"`
 		IDProofingStatus string            `json:"id_proofing_status"`
+		Archived         bool              `json:"archived"`
 		UpdatedAt        string            `json:"updated_at"`
 		CreatedAt        string            `json:"created_at"`
 		Attributes       map[string]string `json:"attributes"`
