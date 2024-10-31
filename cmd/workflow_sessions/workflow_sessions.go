@@ -6,6 +6,7 @@ package workflow_sessions
 import (
 	"encoding/csv"
 	"encoding/json"
+	"fmt"
 	"nerm/cmd/utilities"
 	"os"
 	"slices"
@@ -93,6 +94,7 @@ func NewWorkflowSessionsCommand() *cobra.Command {
 		newSessionsGetCommand(),
 		newSessionsCreateCommand(),
 		newSessionsRerunCommand(),
+		newSessionsJSONtoCSVCommand(),
 	)
 
 	return cmd
@@ -139,6 +141,8 @@ func printJsonToFile(fileLoc string, jsonData SessionResponse, lastLoop bool) {
 
 func convertJSONToCSV(source string, destination string) error {
 	var keys []string
+
+	fmt.Println("Destination:", destination)
 
 	// Read the JSON file into the struct array
 	sourceFile, err := os.Open(source)
