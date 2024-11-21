@@ -105,7 +105,7 @@ func CreateEnvironment(environmentName string) error {
 	configs.SetCurrentEnvironment(environmentName)
 	configs.SetTenant(tenant)
 	configs.SetBaseURL(baseurl)
-	configs.SetAPIToken(token)
+	configs.SetAPIToken(tenant+"."+baseurl,tenant,token)
 
 	return nil
 }
@@ -166,7 +166,7 @@ func UpdateEnvironment(environmentName string) error {
 	configs.SetCurrentEnvironment(environmentName)
 	configs.SetTenant(tenant)
 	configs.SetBaseURL(baseurl)
-	configs.SetAPIToken(token)
+	configs.SetAPIToken(tenant+"."+baseurl,tenant,token)
 
 	return nil
 }

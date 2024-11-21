@@ -1,6 +1,6 @@
 # CLI Tool to make API requests and generate files
 
-Built with GO and Cobra
+Built with GO and Cobra. This utilized the [go-keyring](https://www.github.com/zalando/go-keyring) to store and retrive secrets
 
 ## Installing
 
@@ -44,4 +44,4 @@ There are default settings configured in the `nerm_config.yaml` file (in the .ne
     - [ ] fix progress bar reporting numbers to not just be the get max if using -d
 - [ ] Better input error checking (number of profile type, env, etc is within range)
 - [ ] Job status table for mass profile change / import
-- [ ] Change Yaml to https://github.com/zalando/go-keyring
+- [x] Change Yaml to https://github.com/zalando/go-keyring

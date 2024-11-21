@@ -10,6 +10,7 @@ import (
 	"strings"
 
 	"github.com/spf13/viper"
+	"github.com/zalando/go-keyring"
 )
 
 // where the file is stored and what the file is
@@ -89,15 +90,21 @@ func SetTenant(tenant string) {
 func SetBaseURL(baseurl string) {
 	viper.Set("ALL_ENVIRONMENTS."+GetCurrentEnvironment()+".BASEURL", baseurl)
 }
-func SetAPIToken(token string) {
-	viper.Set("ALL_ENVIRONMENTS."+GetCurrentEnvironment()+".TOKEN", "Bearer "+token)
+func SetAPIToken(service string, user string, pass string){
+	// set password
+    err := keyring.Set(service,user,"Bearer "+pass)
+    if err != nil {
+        log.Fatal(err)
+    }
 }
+
 func SetOutputFolder(default_output_location string) {
 	viper.Set("DEFAULT_OUTPUT_LOCATION", default_output_location)
 }
 func SetDefaultLimitParam(limit string) {
 	viper.Set("LIMIT", limit)
 }
+
 
 func GetCurrentEnvironment() string {
 	return strings.ToLower(viper.GetString("CURRENT_ENVIRONMENT"))
@@ -113,7 +120,15 @@ func GetBaseURL() string {
 	return base
 }
 func GetAPIToken() string {
-	return viper.GetString("ALL_ENVIRONMENTS." + GetCurrentEnvironment() + ".TOKEN")
+	tenant := GetTenant()
+	service := tenant+"."+GetBaseURL()
+	token, err := keyring.Get(service, tenant)
+	if err != nil {
+        log.Fatal(err)
+    }
+
+	return token
+	// return viper.GetString("ALL_ENVIRONMENTS." + GetCurrentEnvironment() + ".TOKEN")
 }
 func GetOutputFolder() string {
 	return viper.GetString("DEFAULT_OUTPUT_LOCATION")
