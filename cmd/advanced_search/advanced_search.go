@@ -326,7 +326,7 @@ func convertJSONToCSV(source string, destination string) error {
 
 	for _, r := range profileData {
 		var csvRow []string
-		csvRow = append(csvRow, r.ID, r.UID, r.Name, r.ProfileTypeID, r.IDProofingStatus, r.UpdatedAt, r.CreatedAt)
+		csvRow = append(csvRow, r.ID, r.UID, r.Name, r.ProfileTypeID, r.Status, r.IDProofingStatus, r.UpdatedAt, r.CreatedAt)
 
 		for j := 7; j < len(header); j++ {
 			csvRow = append(csvRow, r.Attributes[header[j]])
