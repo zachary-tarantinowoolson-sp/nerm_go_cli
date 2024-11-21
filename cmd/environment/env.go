@@ -39,11 +39,19 @@ func printEnvListTable(data []string) {
 	tbl := table.New("Environments", "","")
 	tbl.WithHeaderFormatter(headerFmt)
 
-	for i := 0; i < len(data); i += 3 {
-		if i > len(data)-3{
-			tbl.AddRow(data[i])
-		} else {
-			tbl.AddRow(data[i],data[i+1],data[i+2])
+	if len(data)>3{
+		for i := 0; i < len(data); i += 3 {
+			if (len(data) - i) == 2 {
+				tbl.AddRow(data[len(data)-2], data[len(data)-1])
+			} else if (len(data) - i) == 1 {
+				tbl.AddRow(data[len(data)-1])
+			} else {
+				tbl.AddRow(data[i],data[i+1],data[i+2])
+			}
+		}
+	} else {
+		for k := range data {
+			tbl.AddRow(data[k])
 		}
 	}
 

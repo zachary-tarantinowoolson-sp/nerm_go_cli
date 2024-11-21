@@ -25,10 +25,6 @@ func newListCommand() *cobra.Command {
 			envs := maps.Keys(configs.GetAllEnvironmentStrings())
 			sort.Strings(envs)
 
-			// for k := range environments {
-			// 	fmt.Println(k)
-			// }
-
 			printEnvListTable(envs)
 
 			return nil
