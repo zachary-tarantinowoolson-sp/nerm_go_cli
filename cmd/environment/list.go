@@ -4,8 +4,10 @@ Copyright © 2024 Zachary Tarantino-Woolson <zachary.tarantino@sailpoint.com>
 package environment
 
 import (
-	"fmt"
-	"nerm/cmd/utilities"
+	"nerm/cmd/configs"
+	"sort"
+
+	"golang.org/x/exp/maps"
 
 	"github.com/spf13/cobra"
 )
@@ -18,13 +20,16 @@ func newListCommand() *cobra.Command {
 		Example: "nerm env list",
 		Aliases: []string{"ls"},
 		RunE: func(cmd *cobra.Command, args []string) error {
-			environments := utilities.FindEnvironments()
-			// for _, env := range environments {
+			// environments := utilities.FindEnvironments()
+
+			envs := maps.Keys(configs.GetAllEnvironmentStrings())
+			sort.Strings(envs)
+
+			// for k := range environments {
+			// 	fmt.Println(k)
 			// }
 
-			for k := range environments {
-				fmt.Println(k)
-			}
+			printEnvListTable(envs)
 
 			return nil
 		},
