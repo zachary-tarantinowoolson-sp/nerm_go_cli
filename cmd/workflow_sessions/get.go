@@ -124,6 +124,7 @@ func newSessionsGetCommand() *cobra.Command {
 			bar := progressbar.Default(int64(getLimitInt)) // set progress to number of profile types found
 
 			lastLoop := false
+			continueGet := true // should the main get loop continue running? Used for the date check..
 
 			for offset := 0; offset < getLimitInt; offset = offset + limitInt {
 				var sessions SessionResponse      // this round of sessions from Get
@@ -186,6 +187,8 @@ func newSessionsGetCommand() *cobra.Command {
 						if createdAtTime.After(compareDate) {
 							// fmt.Println("after")
 							finalSessions.Sessions = append(finalSessions.Sessions, rec)
+						} else {
+							continueGet = false
 						}
 					} else {
 						finalSessions.Sessions = append(finalSessions.Sessions, rec)
@@ -193,6 +196,10 @@ func newSessionsGetCommand() *cobra.Command {
 				}
 
 				printJsonToFile(outputLoc+".json", finalSessions, lastLoop)
+
+				if !continueGet{
+					break
+				}
 			}
 
 			endSessionsJsonFile(outputLoc + ".json")

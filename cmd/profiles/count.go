@@ -16,13 +16,15 @@ import (
 )
 
 func newProfileCountCommand() *cobra.Command {
-	return &cobra.Command{
+	cmd := &cobra.Command{
 		Use:     "count",
 		Short:   "Pulls a count of all Profiles in current environment",
 		Long:    "Pulls a count of all Profiles in current environment by profile Type",
 		Example: "nerm profiles count",
 		Aliases: []string{"c"},
 		RunE: func(cmd *cobra.Command, args []string) error {
+
+			force_backend := cmd.Flags().Lookup("force_backend").Value.String()
 
 			endTotal := 0
 			allStatuses := [4]string{"Active", "Inactive", "On Leave", "Terminated"}
@@ -60,6 +62,7 @@ func newProfileCountCommand() *cobra.Command {
 				params.Add("limit", "1")
 				params.Add("metadata", "true")
 				params.Add("exclude_attributes", "true")
+				params.Add("force_backend", force_backend)
 
 				for _, status := range allStatuses {
 
@@ -99,4 +102,7 @@ func newProfileCountCommand() *cobra.Command {
 			return nil
 		},
 	}
+	cmd.Flags().StringP("force_backend", "b", "suite", "Force the Profile Service (profile_service) or Identity Suite (suite) controllers")
+
+	return cmd
 }

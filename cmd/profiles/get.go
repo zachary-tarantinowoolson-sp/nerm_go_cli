@@ -85,8 +85,8 @@ func newProfileGetCommand() *cobra.Command {
 				fmt.Println("Limit can not be over 500")
 				limit = "500"
 				params.Add("limit", "500")
-			} else if limitInt > getLimitInt {
-				params.Add("limit", getLimit)
+			} else {
+				params.Add("limit",limit)
 			}
 			if isafterIdSet {
 				params.Add("after_id", after_id)
@@ -125,18 +125,18 @@ func newProfileGetCommand() *cobra.Command {
 				utilities.CheckError(requestErr)
 
 				var profile_result ProfileResponse
-				var profile_filtered_result []struct {
-					ID               string            `json:"id"`
-					UID              string            `json:"uid"`
-					Name             string            `json:"name"`
-					ProfileTypeID    string            `json:"profile_type_id"`
-					Status           string            `json:"status"`
-					IDProofingStatus string            `json:"id_proofing_status"`
-					Archived         bool              `json:"archived"`
-					UpdatedAt        string            `json:"updated_at"`
-					CreatedAt        string            `json:"created_at"`
-					Attributes       map[string]string `json:"attributes"`
-				}
+				// var profile_filtered_result []struct {
+				// 	ID               string            `json:"id"`
+				// 	UID              string            `json:"uid"`
+				// 	Name             string            `json:"name"`
+				// 	ProfileTypeID    string            `json:"profile_type_id"`
+				// 	Status           string            `json:"status"`
+				// 	IDProofingStatus string            `json:"id_proofing_status"`
+				// 	Archived         bool              `json:"archived"`
+				// 	UpdatedAt        string            `json:"updated_at"`
+				// 	CreatedAt        string            `json:"created_at"`
+				// 	Attributes       map[string]string `json:"attributes"`
+				// }
 				// var profileResultZero ProfileResponse
 				var respMetaData ResponseMetaData
 
@@ -153,14 +153,17 @@ func newProfileGetCommand() *cobra.Command {
 
 				// Use a loop to check for and only store Archived or Non-Archived proifles (depending on the flag set)
 				// If both the record and the flag are true or both are false - store the profile
-				for _, rec := range profile_result.Profiles {
-					if rec.Archived && keep_archived {
-						profile_filtered_result = append(profile_filtered_result, rec)
-					} else if !rec.Archived && !keep_archived {
-						profile_filtered_result = append(profile_filtered_result, rec)
-					}
+				if keep_archived {
+					// do nothing
 				}
-				profile_result.Profiles = profile_filtered_result
+				// for _, rec := range profile_result.Profiles {
+				// 	if rec.Archived && keep_archived {
+				// 		profile_filtered_result = append(profile_filtered_result, rec)
+				// 	} else if !rec.Archived && !keep_archived {
+				// 		profile_filtered_result = append(profile_filtered_result, rec)
+				// 	}
+				// }
+				// profile_result.Profiles = profile_filtered_result
 
 				if (offset + limitInt) >= getLimitInt {
 					bar.Set(getLimitInt)
@@ -203,7 +206,7 @@ func newProfileGetCommand() *cobra.Command {
 	cmd.Flags().StringP("profile_type", "t", "", "Profile type ID of profiles")
 	cmd.Flags().StringP("status", "s", "", "Status of profiles")
 	cmd.Flags().StringP("name", "n", "", "Name of the profile(s) to look for")
-	cmd.Flags().StringP("force_backend", "b", "", "Force the Profile Service or Identity Suite controllers")
+	cmd.Flags().StringP("force_backend", "b", "", "Force the Profile Service (profile_service) or Identity Suite (suite) controllers")
 	cmd.Flags().StringP("limit", "l", strconv.Itoa(configs.GetDefaultLimitParam()), "Limit for each GET request")
 	cmd.Flags().StringP("get_limit", "g", "", "Set a Get limit for how many profiles to pull back (default is All profiles)")
 	cmd.Flags().String("after_id", "", "Get all Profiles using the after_id pagination. Leave blank or add a value to start from")

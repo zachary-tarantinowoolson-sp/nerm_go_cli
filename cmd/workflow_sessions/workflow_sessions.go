@@ -106,15 +106,37 @@ func createSessionsJsonFile(fileLoc string) {
 	defer file.Close()
 	// file.WriteString(strings.Trim("{\"profiles\":[", "\""))
 	file.WriteString(strings.Trim("[", "\""))
+	
+}
+
+func checkForCommaAndTrim(fileLoc string) {
+	file, fileErr := os.OpenFile(fileLoc, os.O_RDWR, 0644)
+	utilities.CheckError(fileErr)
 	defer file.Close()
+	
+	// Get File size
+	fileInfo, statErr := file.Stat()
+	utilities.CheckError(statErr)
+	fileSize := fileInfo.Size()
+
+	// Read the last character
+	char := make([]byte, 1)
+	_, readErr := file.ReadAt(char,fileSize-1)
+	utilities.CheckError(readErr)
+
+	if char[0] == ',' {
+		char[0] = ' '
+		_, writeErr := file.WriteAt(char,fileSize-1)
+		utilities.CheckError(writeErr)
+	}
+	
 }
 
 func endSessionsJsonFile(fileLoc string) {
-
+	checkForCommaAndTrim(fileLoc)
 	file, _ := os.OpenFile(fileLoc, os.O_APPEND, os.ModePerm)
 	defer file.Close()
 	file.WriteString(strings.Trim("]", "\""))
-	defer file.Close()
 }
 
 func printJsonToFile(fileLoc string, jsonData SessionResponse, lastLoop bool) {
@@ -136,7 +158,7 @@ func printJsonToFile(fileLoc string, jsonData SessionResponse, lastLoop bool) {
 	}
 	// encoder := json.NewEncoder(file)
 	// encoder.Encode(jsonData)
-	defer file.Close()
+
 }
 
 func convertJSONToCSV(source string, destination string) error {
